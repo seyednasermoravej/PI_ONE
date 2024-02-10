@@ -45,15 +45,43 @@ static const struct adc_dt_spec adc_channels[] = {
 
 /*adc*/
 
+/*led*/
 
+#include <zephyr/drivers/gpio.h>
+/* The devicetree node identifier for the "led0" alias. */
+#define LED0_NODE DT_ALIAS(led0)
+
+/*
+ * A build error on this line means your board is unsupported.
+ * See the sample documentation for information on how to fix this.
+ */
+static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(LED0_NODE, gpios);
+
+/*led*/
 
 
 int main(void)
 {
+	/*led*/
+		int ret;
+	bool led_state = true;
+
+	if (!gpio_is_ready_dt(&led)) {
+		return 0;
+	}
+
+	ret = gpio_pin_configure_dt(&led, GPIO_OUTPUT_ACTIVE);
+	if (ret < 0) {
+		return 0;
+	}
+
+	/*led*/
+
+
+
 	volatile uint32_t max_period;
 	uint32_t period;
 	uint8_t dir = 0U;
-	int ret;
 
 	printk("PWM-based blinky\n");
 
@@ -134,7 +162,6 @@ int main(void)
 	while (1) {
 		printk("ADC reading[%u]:\n", count++);
 		for (size_t i = 0U; i < ARRAY_SIZE(adc_channels); i++) {
-			i = 0;
 			volatile int32_t val_mv;
 
 			printk("- %s, channel %d: ",
@@ -169,7 +196,12 @@ int main(void)
 				printk(" = %"PRId32" mV\n", val_mv);
 			}
 		}
-
+/*led*/
+		ret = gpio_pin_toggle_dt(&led);
+		if (ret < 0) {
+			return 0;
+		}
+/*led*/
 		k_sleep(K_MSEC(1000));
 	}
 

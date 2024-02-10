@@ -12,10 +12,18 @@
 		};
 	};
 
+	leds: leds {
+		compatible = "gpio-leds";	
+		green_led: led_6 {
+			gpios = < &gpiod 15 GPIO_ACTIVE_HIGH >;	
+		};
+	};
+
 	aliases {
 
 		pwmt = &pwm_led0;
 		pwmn = &pwm_led1;
+		led0 = &green_led;
 
 	};
 
