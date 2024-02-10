@@ -12,10 +12,17 @@
 		};
 	};
 
+	leds: leds {
+		compatible = "gpio-leds";	
+		builtinled: builtinled {
+			gpios = < &gpioa 5 GPIO_ACTIVE_HIGH >;	
+		};
+	};
 	aliases {
 
 		pwmt = &pwm_led0;
 		pwmn = &pwm_led1;
+		led0 = &builtinled;
 
 	};
 
