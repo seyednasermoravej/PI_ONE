@@ -23,8 +23,8 @@
 				"auto",
 				"-b",
 				// "nrf52840dk_nrf52840"
-				"stm32f4_disco"
-				// "nucleo_g474re"
+				// "stm32f4_disco"
+				"nucleo_g474re"
 			],
 			"problemMatcher": [
 				"$gcc"
@@ -80,10 +80,10 @@
 		{
 			"id": "board",
 			"type": "promptString",
-			"default": "stm32f4_disco",
+			// "default": "stm32f4_disco",
 				// "nrf52840dk_nrf52840"
 
-				// "default":"nucleo_g474re",
+				"default":"nucleo_g474re",
 			"description": "See https://docs.zephyrproject.org/latest/boards/index.html"
 		},
 		{
