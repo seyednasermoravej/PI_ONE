@@ -5,3 +5,8 @@ find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(pwm)
 
 target_sources(app PRIVATE src/main.c)
+#optimizain disable begin
+# add_library(set-app-flags INTERFACE)
+# target_compile_options(set-app-flags INTERFACE -O0)
+# target_link_libraries(app PRIVATE set-app-flags)
+#optimizain disable end
