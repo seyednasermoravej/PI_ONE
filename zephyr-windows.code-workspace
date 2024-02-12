@@ -13,7 +13,9 @@
 		"C_Cpp.default.compileCommands": "${workspaceFolder}/build/compile_commands.json",
 
 		// File Associations
-		"files.associations": {}
+		"files.associations": {
+			"usart.h": "c"
+		}
 	},
 	"tasks": {
 		"version": "2.0.0",

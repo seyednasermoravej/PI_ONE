@@ -24,11 +24,16 @@
 		pwmt = &pwm_led0;
 		pwmn = &pwm_led1;
 		led0 = &green_led;
+		deviceusart = &usart3;
 
 	};
 
 	zephyr,user {
 		io-channels = <&adc1 0>, <&adc1 1>, <&adc1 12>, <&adc1 13>;
+	};
+	chosen {
+		zephyr,console = &usart2;
+		zephyr,shell-uart = &usart2;
 	};
 };
 
@@ -90,4 +95,25 @@
 		zephyr,resolution = <12>;
 
 	};
+};
+
+&usart2 {
+	status = "okay";
+	pinctrl-0 = < &usart2_tx_pa2 &usart2_rx_pa3 >;
+	pinctrl-names = "default";
+	current-speed = < 115200 >;
+};
+
+&usart3 {
+	status = "okay";
+	pinctrl-0 = <  &usart3_tx_pc10 &usart3_rx_pc11 >;
+	pinctrl-names = "default";
+	current-speed = < 115200 >;
+};
+
+
+&can1 {
+	status = "okay";
+	pinctrl-0 = < &can1_tx_pb9 &can1_rx_pb8 >;
+	pinctrl-names = "default";
 };
