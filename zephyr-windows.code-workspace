@@ -15,7 +15,8 @@
 		// File Associations
 		"files.associations": {
 			"usart.h": "c"
-		}
+		},
+		"mcu-debug.rtos-views.showRTOS": true
 	},
 	"tasks": {
 		"version": "2.0.0",

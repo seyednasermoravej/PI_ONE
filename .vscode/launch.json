@@ -13,7 +13,8 @@
             "configFiles": [ "interface\\stlink.cfg", "target\\stm32f4x.cfg"],
             "gdbPath": "${userHome}/zephyr-sdk-0.16.5/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb",
             "preLaunchTask": "West Build",
-            "showDevDebugOutput": "raw"
+            "showDevDebugOutput": "raw",
+            "rtos": "Zephyr"
         },
         {
             "name": "LaunchG",
@@ -27,7 +28,8 @@
             "interface": "swd",
             "configFiles": [ "interface\\stlink.cfg", "target\\stm32fgx.cfg"],
             "preLaunchTask": "West Build",
-            "showDevDebugOutput": "raw"
+            "showDevDebugOutput": "raw",
+            "rtos": "Zephyr"
         },
         {
             "name": "Attach",
