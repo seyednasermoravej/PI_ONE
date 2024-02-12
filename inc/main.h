@@ -1,0 +1,8 @@
+
+
+
+
+
+
+#define USART_SHELL_PRIORITY     7
+#define USART_DEVICE_PRIORITY    7
