@@ -16,7 +16,8 @@
 		"files.associations": {
 			"usart.h": "c"
 		},
-		"mcu-debug.rtos-views.showRTOS": true
+		"mcu-debug.rtos-views.showRTOS": true,
+		"nrf-connect.toolchain.path": "${nrf-connect.toolchain:2.5.2}"
 	},
 	"tasks": {
 		"version": "2.0.0",
@@ -110,7 +111,14 @@
 				"servertype": "openocd",
 				// "servertype": "jlink",
 				"gdbPath": "${userHome}/zephyr-sdk-0.16.5/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb",
-				"preLaunchTask": "West Build"
+				"preLaunchTask": "West Build",
+			// 	            "overrideLaunchCommands": [
+            //     "interpreter-exec console \"monitor reset halt\"",
+            //     //'target-download',
+            //     //'interpreter-exec console \"monitor reset halt\"',
+            //     "-enable-pretty-printing"
+            // ],
+			// "breakAfterReset": true
 			},
 			{
 				"name": "Attach",

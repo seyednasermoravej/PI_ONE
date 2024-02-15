@@ -14,7 +14,15 @@
             "gdbPath": "${userHome}/zephyr-sdk-0.16.5/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb",
             "preLaunchTask": "West Build",
             "showDevDebugOutput": "raw",
-            "rtos": "Zephyr"
+            "rtos": "Zephyr",
+            "overrideLaunchCommands": [
+                "interpreter-exec console \"monitor reset halt\"",
+                //'target-download',
+                //'interpreter-exec console \"monitor reset halt\"',
+                "-enable-pretty-printing"
+            ],
+            // "breakAfterReset": true
+
         },
         {
             "name": "LaunchG",
@@ -29,7 +37,8 @@
             "configFiles": [ "interface\\stlink.cfg", "target\\stm32fgx.cfg"],
             "preLaunchTask": "West Build",
             "showDevDebugOutput": "raw",
-            "rtos": "Zephyr"
+            "rtos": "Zephyr",
+            // "breakAfterReset": true
         },
         {
             "name": "Attach",
