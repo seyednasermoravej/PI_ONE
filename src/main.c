@@ -70,7 +70,7 @@ int pwmSet(const struct pwm_dt_spec pwm, uint32_t frequency, float dutycycle)
 		return 0;
 	}
 	uint32_t pulse = period * dutycycle;
-	int err = pwm_set_dt(&pwm_led0, period, pulse);
+	int err = pwm_set_dt(&pwm, period, pulse);
 	return err;
 
 }
@@ -93,8 +93,7 @@ int main(void)
 	/*led*/
 
 	int err;
-	err = pwmSet(pwm_led0, 100000, 0.2);
-	err = pwmSet(pwm_led1, 100000, 0.5);
+	err = pwmSet(pwm_led0, 100000, 0.5);
 	err = pwmSet(pwm_led2, 100000, 0.8);
 
 	/*adc*/
@@ -108,6 +107,7 @@ int main(void)
 		.buffer_size = sizeof(buf),
 	};
 
+	err = pwmSet(pwm_led1, 100000, 0.5);
 	/* Configure channels individually prior to sampling. */
 	for (size_t i = 1; i < ARRAY_SIZE(adc_channels); i++) {
 		if (!adc_is_ready_dt(&adc_channels[i])) {
