@@ -26,6 +26,8 @@ static int usartInit(const struct device *const usart, void * cb)
 static void cbShell(const struct device *dev, void *user_data)
 {
 	uint8_t c;
+	uint8_t totRX[MSG_SIZE];
+	uint8_t temp[] = "this is echo: ";
 	static uint8_t rx_buf_pos = 0;
 	static char rx_buf[MSG_SIZE];
 
@@ -49,6 +51,10 @@ static void cbShell(const struct device *dev, void *user_data)
 		}
 		/* else: characters beyond buffer size are dropped */
 	}
+	memset(totRX, 0, MSG_SIZE);
+	memcpy(totRX, temp, 14);
+
+	memcpy(&totRX[13], rx_buf, MSG_SIZE - 14);
 	k_msgq_put(&shellMsg, &rx_buf, K_NO_WAIT);
 }
 
@@ -78,23 +84,25 @@ static void cbDevice(const struct device *dev, void *user_data)
 		}
 		/* else: characters beyond buffer size are dropped */
 	}
+
 }
 
 void shellTask()
 {
 	uint8_t tx_buf[40];
+	uint8_t tx_buf2[] = "besme aalah";
 	usartInit(usartShell, cbShell);
-	while (k_msgq_get(&shellMsg, &tx_buf, K_FOREVER) == 0) {
-		int err = uart_tx(usartShell, tx_buf, sizeof(tx_buf), SYS_FOREVER_US);
+	while (1)
+	// while (k_msgq_get(&shellMsg, &tx_buf, K_FOREVER) == 0)
+	{
+		int err = uart_tx(usartShell, tx_buf2, sizeof(tx_buf2), SYS_FOREVER_US);
+		// int err = uart_tx(usartShell, tx_buf, sizeof(tx_buf), SYS_FOREVER_US);
 		if(err)
 		{
 			return;
 		}
-		k_msleep(100);
-
-
+		k_msleep(1000);
 	}
-
 } 
 
 
@@ -102,13 +110,14 @@ void deviceTask()
 {
 	uint8_t tx_buf[40];
 	usartInit(usartDevice, cbDevice);
-	while (k_msgq_get(&deviceMsg, &tx_buf, K_FOREVER) == 0) {
+	while (k_msgq_get(&deviceMsg, &tx_buf, K_FOREVER) == 0)
+	{
 		int err = uart_tx(usartDevice, tx_buf, sizeof(tx_buf), SYS_FOREVER_US);
 		if(err)
 		{
 			return;
 		}
-		k_msleep(100);
+		k_msleep(1000);
 
 	}
 }

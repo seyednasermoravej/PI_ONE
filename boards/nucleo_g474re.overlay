@@ -8,8 +8,11 @@
 		};
 
 		pwm_led1: pwm_led1{
-			pwms = < &pwm1 2 PWM_MSEC(20) PWM_POLARITY_NORMAL>;
+			pwms = < &pwm4 1 PWM_MSEC(20) PWM_POLARITY_NORMAL>;
+			// pwms = < &pwm1 2 PWM_MSEC(20) PWM_POLARITY_NORMAL>;
 		};
+
+
 	};
 
 	leds: leds {
@@ -46,6 +49,19 @@
 		// pinctrl-0 = <&tim1_ch2_pa9>;
 		// pinctrl-0 = <&tim1_ch1_pa8>;
 		pinctrl-0 = <&tim1_ch1_pa8 &tim1_ch2_pa9>;
+		pinctrl-names = "default";
+	};
+};
+
+&timers4 {
+	// st,prescaler = <10000>;
+	status = "okay";
+
+	pwm4: pwm {
+		status = "okay";
+		// pinctrl-0 = <&tim1_ch2_pa9>;
+		// pinctrl-0 = <&tim1_ch1_pa8>;
+		pinctrl-0 = <&tim4_ch1_pb6>;
 		pinctrl-names = "default";
 	};
 };

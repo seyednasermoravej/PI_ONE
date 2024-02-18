@@ -16,10 +16,12 @@
 
 static const struct pwm_dt_spec pwm_led0 = PWM_DT_SPEC_GET(DT_ALIAS(pwmt));
 static const struct pwm_dt_spec pwm_led1 = PWM_DT_SPEC_GET(DT_ALIAS(pwmn));
+// static const struct pwm_dt_spec pwm_led2 = PWM_DT_SPEC_GET(DT_ALIAS(pwmtest));
 
 #define MIN_PERIOD PWM_SEC(1U) / 128U
-#define DUTYCYCLE0	0.3
-#define DUTYCYCLE1	0.9
+#define DUTYCYCLE0	0.7
+#define DUTYCYCLE1	0.3
+#define DUTYCYCLE2	0.5
 #define MAX_PERIOD 10000
 /*adc*/
 #include <zephyr/device.h>
@@ -95,6 +97,11 @@ int main(void)
 		       pwm_led1.dev->name);
 		return 0;
 	}
+	// if (!pwm_is_ready_dt(&pwm_led2)) {
+	// 	printk("Error: PWM device %s is not ready\n",
+	// 	       pwm_led2.dev->name);
+	// 	return 0;
+	// }
 
 	/*
 	 * In case the default MAX_PERIOD value cannot be set for
@@ -105,7 +112,8 @@ int main(void)
 	 */
 	printk("Calibrating for channel %d...\n", pwm_led0.channel);
 	max_period = MAX_PERIOD;
-	while (pwm_set_dt(&pwm_led0, max_period, max_period * DUTYCYCLE0)) {
+	uint32_t duty0 = (uint32_t) max_period * DUTYCYCLE0;
+	while (pwm_set_dt(&pwm_led0, max_period, duty0)) {
 		max_period /= 2U;
 		if (max_period < (4U * MIN_PERIOD)) {
 			printk("Error: PWM device "
@@ -120,7 +128,7 @@ int main(void)
 
 	printk("Calibrating for channel %d...\n", pwm_led1.channel);
 	max_period = MAX_PERIOD;
-	while (pwm_set_dt(&pwm_led1, max_period, max_period * DUTYCYCLE1)) {
+	while (pwm_set_dt(&pwm_led1, max_period, (uint32_t)(max_period * DUTYCYCLE1))) {
 		max_period /= 2U;
 		if (max_period < (4U * MIN_PERIOD)) {
 			printk("Error: PWM device "
@@ -129,6 +137,20 @@ int main(void)
 			return 0;
 		}
 	}
+	printk("Calibrating for channel %d...\n", pwm_led1.channel);
+	max_period = MAX_PERIOD;
+	// while (pwm_set_dt(&pwm_led2, max_period, (uint32_t)(max_period * DUTYCYCLE2))) {
+	// 	max_period /= 2U;
+	// 	if (max_period < (4U * MIN_PERIOD)) {
+	// 		printk("Error: PWM device "
+	// 		       "does not support a period at least %lu\n",
+	// 		       4U * MIN_PERIOD);
+	// 		return 0;
+	// 	}
+	// }
+
+
+
 	// pwm_enable_capture
 	// pwm_enable
 	period = max_period;
@@ -146,7 +168,7 @@ int main(void)
 	};
 
 	/* Configure channels individually prior to sampling. */
-	for (size_t i = 0; i < ARRAY_SIZE(adc_channels); i++) {
+	for (size_t i = 1; i < ARRAY_SIZE(adc_channels); i++) {
 		if (!adc_is_ready_dt(&adc_channels[i])) {
 			printk("ADC controller device %s not ready\n", adc_channels[i].dev->name);
 			return 0;
@@ -161,7 +183,7 @@ int main(void)
 
 	while (1) {
 		printk("ADC reading[%u]:\n", count++);
-		for (size_t i = 0U; i < ARRAY_SIZE(adc_channels); i++) {
+		for (int i = 1; i < ARRAY_SIZE(adc_channels); i++) {
 			volatile int32_t val_mv;
 
 			printk("- %s, channel %d: ",

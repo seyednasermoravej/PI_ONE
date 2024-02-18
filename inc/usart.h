@@ -10,6 +10,7 @@ extern "C"
 #include "main.h"
 #include "queues.h"
 #include <zephyr/kernel.h>
+#include <string.h>
 
 #define MSG_SIZE    40
 #define USART_DEVICE_STACK_SIZE     1024

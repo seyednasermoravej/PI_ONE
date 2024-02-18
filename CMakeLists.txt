@@ -8,9 +8,10 @@ project(pwm)
 target_include_directories(app PRIVATE inc)
 # target_sources(app PRIVATE src/main.c)
 target_sources(app PRIVATE src/main.c src/usart.c src/queues.c)
+# target_sources(app PRIVATE src/usart.c src/queues.c)
 
 #optimizain disable begin
-# add_library(set-app-flags INTERFACE)
-# target_compile_options(set-app-flags INTERFACE -O0)
-# target_link_libraries(app PRIVATE set-app-flags)
+add_library(set-app-flags INTERFACE)
+target_compile_options(set-app-flags INTERFACE -O0)
+target_link_libraries(app PRIVATE set-app-flags)
 #optimizain disable end
