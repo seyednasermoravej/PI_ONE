@@ -16,9 +16,8 @@
 
 static const struct pwm_dt_spec pwm_led0 = PWM_DT_SPEC_GET(DT_ALIAS(pwmt));
 static const struct pwm_dt_spec pwm_led1 = PWM_DT_SPEC_GET(DT_ALIAS(pwmn));
-// static const struct pwm_dt_spec pwm_led2 = PWM_DT_SPEC_GET(DT_ALIAS(pwmtest));
+static const struct pwm_dt_spec pwm_led2 = PWM_DT_SPEC_GET(DT_ALIAS(pwmtest));
 
-#define MIN_PERIOD PWM_SEC(1U) / 128U
 #define DUTYCYCLE0	0.7
 #define DUTYCYCLE1	0.3
 #define DUTYCYCLE2	0.5
@@ -61,6 +60,20 @@ static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(LED0_NODE, gpios);
 
 /*led*/
 
+int pwmSet(const struct pwm_dt_spec pwm, uint32_t frequency, float dutycycle)
+{
+	uint32_t period;
+	period = (uint32_t)(1000000000 / frequency);
+	if (!pwm_is_ready_dt(&pwm)) {
+		printk("Error: PWM device %s is not ready\n",
+		       pwm.dev->name);
+		return 0;
+	}
+	uint32_t pulse = period * dutycycle;
+	int err = pwm_set_dt(&pwm_led0, period, pulse);
+	return err;
+
+}
 
 int main(void)
 {
@@ -79,86 +92,14 @@ int main(void)
 
 	/*led*/
 
-
-
-	volatile uint32_t max_period;
-	uint32_t period;
-	uint8_t dir = 0U;
-
-	printk("PWM-based blinky\n");
-
-	if (!pwm_is_ready_dt(&pwm_led0)) {
-		printk("Error: PWM device %s is not ready\n",
-		       pwm_led0.dev->name);
-		return 0;
-	}
-	if (!pwm_is_ready_dt(&pwm_led1)) {
-		printk("Error: PWM device %s is not ready\n",
-		       pwm_led1.dev->name);
-		return 0;
-	}
-	// if (!pwm_is_ready_dt(&pwm_led2)) {
-	// 	printk("Error: PWM device %s is not ready\n",
-	// 	       pwm_led2.dev->name);
-	// 	return 0;
-	// }
-
-	/*
-	 * In case the default MAX_PERIOD value cannot be set for
-	 * some PWM hardware, decrease its value until it can.
-	 *
-	 * Keep its value at least MIN_PERIOD * 4 to make sure
-	 * the sample changes frequency at least once.
-	 */
-	printk("Calibrating for channel %d...\n", pwm_led0.channel);
-	max_period = MAX_PERIOD;
-	uint32_t duty0 = (uint32_t) max_period * DUTYCYCLE0;
-	while (pwm_set_dt(&pwm_led0, max_period, duty0)) {
-		max_period /= 2U;
-		if (max_period < (4U * MIN_PERIOD)) {
-			printk("Error: PWM device "
-			       "does not support a period at least %lu\n",
-			       4U * MIN_PERIOD);
-			return 0;
-		}
-	}
-
-	printk("Done calibrating; maximum/minimum periods %u/%lu nsec\n",
-	       max_period, MIN_PERIOD);
-
-	printk("Calibrating for channel %d...\n", pwm_led1.channel);
-	max_period = MAX_PERIOD;
-	while (pwm_set_dt(&pwm_led1, max_period, (uint32_t)(max_period * DUTYCYCLE1))) {
-		max_period /= 2U;
-		if (max_period < (4U * MIN_PERIOD)) {
-			printk("Error: PWM device "
-			       "does not support a period at least %lu\n",
-			       4U * MIN_PERIOD);
-			return 0;
-		}
-	}
-	printk("Calibrating for channel %d...\n", pwm_led1.channel);
-	max_period = MAX_PERIOD;
-	// while (pwm_set_dt(&pwm_led2, max_period, (uint32_t)(max_period * DUTYCYCLE2))) {
-	// 	max_period /= 2U;
-	// 	if (max_period < (4U * MIN_PERIOD)) {
-	// 		printk("Error: PWM device "
-	// 		       "does not support a period at least %lu\n",
-	// 		       4U * MIN_PERIOD);
-	// 		return 0;
-	// 	}
-	// }
-
-
-
-	// pwm_enable_capture
-	// pwm_enable
-	period = max_period;
+	int err;
+	err = pwmSet(pwm_led0, 100000, 0.2);
+	err = pwmSet(pwm_led1, 100000, 0.5);
+	err = pwmSet(pwm_led2, 100000, 0.8);
 
 	/*adc*/
 
 
-	int err;
 	uint32_t count = 0;
 	uint16_t buf;
 	struct adc_sequence sequence = {

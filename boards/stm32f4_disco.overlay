@@ -10,10 +10,10 @@
 		pwm_led1: pwm_led1{
 			pwms = < &pwm1 2 PWM_MSEC(20) PWM_POLARITY_NORMAL>;
 		};
-		// pwm_led2: pwm_led2{
+		pwm_led2: pwm_led2{
 
-		// pwms = < &pwm4 1 PWM_MSEC(20) PWM_POLARITY_NORMAL>;
-		// };
+		pwms = < &pwm4 1 PWM_MSEC(20) PWM_POLARITY_NORMAL>;
+		};
 	};
 
 	leds: leds {
@@ -27,7 +27,7 @@
 
 		pwmt = &pwm_led0;
 		pwmn = &pwm_led1;
-		// pwmtest = &pwm_led2;
+		pwmtest = &pwm_led2;
 		led0 = &green_led;
 		deviceusart = &usart3;
 
@@ -54,14 +54,14 @@
 	};
 };
 
-// &timers4 {
-// 	status = "okay";
-// 	pwm4: pwm {
-// 		status = "okay";
-// 		pinctrl-0 = < &tim4_ch1_pb6>;
-// 		pinctrl-names = "default";
-// 	};
-// };
+&timers4 {
+	status = "okay";
+	pwm4: pwm {
+		status = "okay";
+		pinctrl-0 = < &tim4_ch1_pb6>;
+		pinctrl-names = "default";
+	};
+};
 
 
 &adc1 {

@@ -71,6 +71,14 @@
 				"problemMatcher": [
 					"$gcc"
 				]
+			},
+			{
+				"label": "buildFlash",
+				"dependsOrder": "sequence",
+				"dependsOn":[
+					"West Build",
+					"West Flash"
+				]
 			}
 		],
 		"inputs": [
