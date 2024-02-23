@@ -1,37 +1,33 @@
 /{
-	pwmleds: pwmleds {
-		compatible = "pwm-leds";
-		status = "okay";
+	pwmleds {
+		allpwms: allpwms{
+			pwms = <&pwm1 1 PWM_KHZ(100) PWM_POLARITY_NORMAL>, < &pwm1 2 PWM_KHZ(100) PWM_POLARITY_NORMAL>, < &pwm3 2 PWM_KHZ(100) PWM_POLARITY_NORMAL>;
 
-		pwm_led0: pwm_led0 {
-			pwms = <&pwm1 1 PWM_MSEC(20) PWM_POLARITY_NORMAL>;
-		};
-
-		pwm_led1: pwm_led1{
-			pwms = < &pwm4 1 PWM_MSEC(20) PWM_POLARITY_NORMAL>;
-			// pwms = < &pwm1 2 PWM_MSEC(20) PWM_POLARITY_NORMAL>;
-		};
-
-
+		};	
 	};
-
 	leds: leds {
 		compatible = "gpio-leds";	
 		builtinled: builtinled {
 			gpios = < &gpioa 5 GPIO_ACTIVE_HIGH >;	
 		};
 	};
+
+	busylcd: busylcd{
+		compatible = "busy-tft";
+		gpios = <&gpioa 6 GPIO_PULL_DOWN>;
+
+	};
 	aliases {
 
-		pwmt = &pwm_led0;
-		pwmn = &pwm_led1;
 		led0 = &builtinled;
+		modbus = &modbus3;
+		lcdusart = &lpuart1;
 		deviceusart = &usart3;
 
 	};
 
 	zephyr,user {
-		io-channels = <&adc1 1>, <&adc1 2>, <&adc1 8>, <&adc1 9>, <&adc3 1>, <&adc3 12>, <&adc4 5>;
+		io-channels = <&adc4 5>, <&adc3 12>, <&adc1 1>, <&adc1 2>, <&adc1 9>, <&adc1 8>, <&adc1 16> ;
 	};
 	chosen {
 		zephyr,console = &usart2;
@@ -39,29 +35,28 @@
 	};
 };
 
+&green_pwm_led {
+	status = "disabled";
+};
 
 &timers1 {
-	// st,prescaler = <10000>;
+	st,prescaler = <1>;
 	status = "okay";
 
 	pwm1: pwm {
 		status = "okay";
-		// pinctrl-0 = <&tim1_ch2_pa9>;
-		// pinctrl-0 = <&tim1_ch1_pa8>;
 		pinctrl-0 = <&tim1_ch1_pa8 &tim1_ch2_pa9>;
 		pinctrl-names = "default";
 	};
 };
 
-&timers4 {
-	// st,prescaler = <10000>;
+&timers3 {
+	st,prescaler = <1>;
 	status = "okay";
 
-	pwm4: pwm {
+	pwm3: pwm {
 		status = "okay";
-		// pinctrl-0 = <&tim1_ch2_pa9>;
-		// pinctrl-0 = <&tim1_ch1_pa8>;
-		pinctrl-0 = <&tim4_ch1_pb6>;
+		pinctrl-0 = <&tim3_ch2_pa7>;
 		pinctrl-names = "default";
 	};
 };
@@ -119,17 +114,8 @@
 	#address-cells = <1>;
 	#size-cells = <0>;
 	st,adc-clock-source = <SYNC>;
-	pinctrl-0 = <&adc3_in12_pb0 &adc3_in1_pb1>;
+	pinctrl-0 = <&adc3_in12_pb0>;
 	pinctrl-names = "default";
-	channel@1{
-		reg = < 1 >;
-		zephyr,gain = "ADC_GAIN_1";
-		zephyr,reference = "ADC_REF_INTERNAL";
-		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
-		zephyr,resolution = <12>;
-
-	};
-
 	channel@c{
 		reg = <0xc>;
 		zephyr,gain = "ADC_GAIN_1";
@@ -158,6 +144,12 @@
 	};
 };
 
+&lpuart1 {
+	status = "okay";
+	pinctrl-0 = < &lpuart1_tx_pc1 &lpuart1_rx_pc0>;
+	// pinctrl-names = "default", "analog";
+	current-speed = < 115200 >;
+};
 
 
 &usart2 {
@@ -173,7 +165,11 @@
 	status = "okay";
 	pinctrl-0 = < &usart3_tx_pc10 &usart3_rx_pc11 >;
 	pinctrl-names = "default";
-	current-speed = < 115200 >;
+	modbus3: modbus{
+		compatible = "zephyr,modbus-serial";
+		status = "okay";
+		de-gpios = < &gpiob 14 GPIO_ACTIVE_HIGH >;
+	};
 };
 
 
@@ -182,3 +178,16 @@
 	pinctrl-0 = < &fdcan1_tx_pb9 &fdcan1_rx_pb8 >;
 	pinctrl-names = "default";
 };
+&die_temp {
+	status = "okay";
+};
+
+
+// &usb {
+// 	status = "okay";
+// };
+
+// hrtim1_cha1_pa8
+//hrtim1_cha2_pa9
+// hrtim1_scin_pb6
+//hrtim1_scout_pb1 

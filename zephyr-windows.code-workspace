@@ -14,7 +14,16 @@
 
 		// File Associations
 		"files.associations": {
-			"usart.h": "c"
+			"usart.h": "c",
+			"leds.h": "c",
+			"adcs.h": "c",
+			"kernel.h": "c",
+			"pwms.h": "c",
+			"compare": "c",
+			"main.h": "c",
+			"queues.h": "c",
+			"device.h": "c",
+			"opalib_control_pid.h": "c"
 		},
 		"mcu-debug.rtos-views.showRTOS": true,
 		"nrf-connect.toolchain.path": "${nrf-connect.toolchain:2.5.2}"
@@ -35,8 +44,8 @@
 					"-p",
 					"auto",
 					"-b",
-					// "nucleo_g474re"
-					"stm32f4_disco"
+					"nucleo_g474re"
+					// "stm32f4_disco"
 					// "nrf52840dk_nrf52840"
 				],
 				"problemMatcher": [
@@ -86,8 +95,8 @@
 				"id": "board",
 				"type": "promptString",
 				// "default": "nrf52840dk_nrf52840",
-				"default": "stm32f4_disco",
-				// "default": "nucleo_g474re",
+				// "default": "stm32f4_disco",
+				"default": "nucleo_g474re",
 				"description": "See https://docs.zephyrproject.org/latest/boards/index.html"
 			},
 			{

@@ -7,11 +7,12 @@
 extern "C"
 {
 #endif
+#include "main.h"
+#ifdef MICRO
 #include <zephyr/kernel.h>
 
-extern struct k_msgq shellMsg;
 extern struct k_msgq deviceMsg;
-
+#endif
 #ifdef __cplusplus
 }
 #endif
