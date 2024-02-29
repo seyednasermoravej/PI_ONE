@@ -13,6 +13,7 @@
 #include "../inc/leds.h"
 #include "../inc/adcs.h"
 #include "../inc/pwms.h"
+#include "../inc/modbus.h"
 
 
 #ifdef MICRO

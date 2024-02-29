@@ -3,7 +3,7 @@
 
 
 
-#define PC 
+#define MICRO 
 #ifdef PC
 #define LOG_INF	printf
 #define printk  printf
