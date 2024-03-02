@@ -12,7 +12,7 @@
 		};
 	};
 
-	busylcd: busylcd{
+	busytft: busytft{
 		compatible = "busy-tft";
 		gpios = <&gpioa 6 GPIO_PULL_DOWN>;
 
@@ -23,6 +23,7 @@
 		modbus = &modbus3;
 		lcdusart = &lpuart1;
 		deviceusart = &usart3;
+		die-temp0 = &die_temp;
 
 	};
 

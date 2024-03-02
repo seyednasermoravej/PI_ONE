@@ -1,0 +1,11 @@
+
+description: GPIO pin to check whether tft lcd is busy or not. 
+
+compatible: "busy-tft"
+
+properties:
+  gpios:
+    type: phandle-array
+    required: true
+    description: |
+      The GPIO connected to the busy pin from LCD.

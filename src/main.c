@@ -17,14 +17,16 @@
 
 
 #ifdef MICRO
+
+#include <zephyr/drivers/sensor.h>
 LOG_MODULE_REGISTER(main, LOG_LEVEL_DBG);
 
-#if !DT_NODE_EXISTS(DT_NODELABEL(busylcd))
+#if !DT_NODE_EXISTS(DT_NODELABEL(busytft))
 #error "Overlay for busytft node not properly defined."
 #endif
-
+const struct device *tempSensor = DEVICE_DT_GET(DT_NODELABEL(die_temp));
 static const struct gpio_dt_spec busytft =
-	GPIO_DT_SPEC_GET_OR(DT_NODELABEL(busylcd), gpios, {0});
+	GPIO_DT_SPEC_GET_BY_IDX(DT_NODELABEL(busytft), gpios, 0);
 
 
 #endif
@@ -52,8 +54,11 @@ void initBoard()
 	initPwms();
 
 	// initCan();
-
-	// initModbus();
+#ifdef MASTER
+	rtuClientInit();
+#else
+	rtuServerInit();
+#endif
 }
 
 
@@ -207,18 +212,26 @@ bool initialCheckSequence()
 	int temp, temp2, tempMcu, vIn, vOut, iIn, iOut;
 	scanf("%d %d %d %d %d %d %d", &temp, &temp2, &tempMcu, &vIn, &vOut, &iIn, &iOut);
 #else
-	uint16_t temp = readAdc(TEMP_IDX);
-	uint16_t temp2 = readAdc(TEMP2_IDX);
-	uint16_t tempMcu = readAdc(TEMP_MCU_IDX);
+	struct sensor_value tempStruct;
+	int32_t temp;
+	// uint16_t temp2 = readAdc(TEMP2_IDX);
+	// uint16_t tempMcu = readAdc(TEMP_MCU_IDX);
+	sensor_sample_fetch(tempSensor);
 	uint16_t vIn = readAdc(VIN_IDX);
 	uint16_t vOut = readAdc(VOUT_IDX);
 	uint16_t iIn = readAdc(I_IN_IDX);
 	uint16_t iOut = readAdc(I_OUT_IDX);
+
+	sensor_channel_get(tempSensor, SENSOR_CHAN_DIE_TEMP, &tempStruct);
+
+	LOG_INF("temp: %d.%06d\n",tempStruct.val1, tempStruct.val2);
+	temp = tempStruct.val1;
+
 #endif
 
-	LOG_INF("Temp value is: %d\n", temp);
-	LOG_INF("temp2 value is: %d\n", temp2);
-	LOG_INF("temp mcu value is: %d\n", tempMcu);
+	// LOG_INF("Temp value is: %d\n", temp);
+	// LOG_INF("temp2 value is: %d\n", temp2);
+	// LOG_INF("temp mcu value is: %d\n", tempMcu);
 	LOG_INF("TB value is: %d\n", temp);
 	LOG_INF("vin value is: %d\n", vIn);
 	LOG_INF("vout value is: %d\n", vOut);

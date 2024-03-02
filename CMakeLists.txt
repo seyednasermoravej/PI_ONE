@@ -7,7 +7,7 @@ project(PL_ONE)
 
 target_include_directories(app PRIVATE inc)
 # target_sources(app PRIVATE src/main.c)
-target_sources(app PRIVATE src/main.c src/usart.c src/queues.c src/leds.c src/pwms.c src/adcs.c src/opalib_control_pid.c)
+target_sources(app PRIVATE src/main.c src/usart.c src/queues.c src/leds.c src/pwms.c src/adcs.c src/opalib_control_pid.c src/rtuClient.c src/rtuServer.c)
 # target_sources(app PRIVATE src/usart.c src/queues.c)
 
 #optimizain disable begin

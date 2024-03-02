@@ -12,17 +12,9 @@ LOG_MODULE_REGISTER(rtuServer, LOG_LEVEL_INF);
 static uint16_t holding_reg[8];
 static uint8_t coils_state;
 
-static const struct gpio_dt_spec led_dev[] = {
-	GPIO_DT_SPEC_GET(DT_ALIAS(led0), gpios),
-	GPIO_DT_SPEC_GET(DT_ALIAS(led1), gpios),
-	GPIO_DT_SPEC_GET(DT_ALIAS(led2), gpios),
-};
 
 static int coil_rd(uint16_t addr, bool *state)
 {
-	if (addr >= ARRAY_SIZE(led_dev)) {
-		return -ENOTSUP;
-	}
 
 	if (coils_state & BIT(addr)) {
 		*state = true;
@@ -39,10 +31,6 @@ static int coil_wr(uint16_t addr, bool state)
 {
 	bool on;
 
-	if (addr >= ARRAY_SIZE(led_dev)) {
-		return -ENOTSUP;
-	}
-
 
 	if (state == true) {
 		coils_state |= BIT(addr);
@@ -52,7 +40,6 @@ static int coil_wr(uint16_t addr, bool state)
 		on = false;
 	}
 
-	gpio_pin_set(led_dev[addr].port, led_dev[addr].pin, (int)on);
 
 	LOG_INF("Coil write, addr %u, %d", addr, (int)state);
 

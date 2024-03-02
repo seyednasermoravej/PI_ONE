@@ -9,5 +9,8 @@
 
 		// File Associations
 		"files.associations": {
+			"modbus.h": "c",
+			"kernel.h": "c",
+			"adcs.h": "c"
 		}
 }

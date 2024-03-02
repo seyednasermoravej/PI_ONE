@@ -10,8 +10,8 @@
 #include <zephyr/logging/log.h>
 
 #include "main.h"
-void rtuServerInit();
-void rtuClientInit();
+int rtuServerInit();
+int rtuClientInit();
 
 
 #endif

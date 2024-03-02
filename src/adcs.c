@@ -22,7 +22,7 @@ int initAdcs()
 {
 #ifdef MICRO
 	/* Configure channels individually prior to sampling. */
-	for (size_t i = 1; i < ARRAY_SIZE(adc_channels); i++) {
+	for (size_t i = 0; i < TEMP_MCU_IDX; i++) {
 		if (!adc_is_ready_dt(&adc_channels[i])) {
 			printk("ADC controller device %s not ready\n", adc_channels[i].dev->name);
 			return 0;
@@ -53,7 +53,7 @@ uint16_t readAdc(uint8_t index)
 
 	while (1) {
 		printk("ADC reading[%u]:\n", count++);
-		for (int i = 1; i < ARRAY_SIZE(adc_channels); i++) {
+		for (int i = 0; i < TEMP_MCU_IDX; i++) {
 			volatile int32_t val_mv;
 
 			printk("- %s, channel %d: ",
@@ -68,16 +68,7 @@ uint16_t readAdc(uint8_t index)
 				continue;
 			}
 
-			/*
-			 * If using differential mode, the 16 bit value
-			 * in the ADC sample buffer should be a signed 2's
-			 * complement value.
-			 */
-			if (adc_channels[i].channel_cfg.differential) {
-				val_mv = (int32_t)((int16_t)buf);
-			} else {
 				val_mv = (int32_t)buf;
-			}
 
 			printk("%"PRId32, val_mv);
 			err = adc_raw_to_millivolts_dt(&adc_channels[i],
