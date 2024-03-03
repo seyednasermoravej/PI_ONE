@@ -36,7 +36,7 @@
 #define MAX_INPUT_CURRENT	25
 #define MAX_OUTPUT_CURRENT	20
 
-#define SLAVE
+#define MASTER 
 
 #ifdef MASTER
 

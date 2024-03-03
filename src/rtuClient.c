@@ -5,7 +5,6 @@
  */
 #include "../inc/modbus.h"
 LOG_MODULE_REGISTER(rtuClient, LOG_LEVEL_INF);
-
 static int client_iface;
 
 const static struct modbus_iface_param client_param = {
@@ -44,19 +43,19 @@ int rtuClientInit(void)
 		return 0;
 	}
 
-	err = modbus_write_holding_regs(client_iface, node, 1, holding_reg,
+	err = modbus_write_holding_regs(client_iface, node, 0, holding_reg,
 					ARRAY_SIZE(holding_reg));
 	if (err != 0) {
 		LOG_ERR("FC16 failed with %d", err);
 		return 0;
 	}
 
-	// err = modbus_read_holding_regs(client_iface, node, 0, holding_reg,
-	// 			       ARRAY_SIZE(holding_reg));
-	// if (err != 0) {
-	// 	LOG_ERR("FC03 failed with %d", err);
-	// 	return 0;
-	// }
+	err = modbus_read_holding_regs(client_iface, node, 0, holding_reg,
+				       ARRAY_SIZE(holding_reg));
+	if (err != 0) {
+		LOG_ERR("FC03 failed with %d", err);
+		return 0;
+	}
 
 	LOG_HEXDUMP_INF(holding_reg, sizeof(holding_reg),
 			"WR|RD holding register:");
@@ -70,44 +69,44 @@ int rtuClientInit(void)
 			return 0;
 		}
 
-		// LOG_INF("Coils state 0x%02x", coil[0]);
+		LOG_INF("Coils state 0x%02x", coil[0]);
 
-		// err = modbus_write_coil(client_iface, node, addr++, true);
-		// if (err != 0) {
-		// 	LOG_ERR("FC05 failed with %d", err);
-		// 	return 0;
-		// }
-
-		k_msleep(sleep);
-		err = modbus_write_coil(client_iface, node, addr, true);
+		err = modbus_write_coil(client_iface, node, addr++, true);
 		if (err != 0) {
 			LOG_ERR("FC05 failed with %d", err);
 			return 0;
 		}
 
 		k_msleep(sleep);
-		// err = modbus_write_coil(client_iface, node, addr++, true);
-		// if (err != 0) {
-		// 	LOG_ERR("FC05 failed with %d", err);
-		// 	return 0;
-		// }
+		err = modbus_write_coil(client_iface, node, addr++, true);
+		if (err != 0) {
+			LOG_ERR("FC05 failed with %d", err);
+			return 0;
+		}
 
-		// k_msleep(sleep);
-		// err = modbus_read_coils(client_iface, node, 0, coil, coil_qty);
-		// if (err != 0) {
-		// 	LOG_ERR("FC01 failed with %d", err);
-		// 	return 0;
-		// }
+		k_msleep(sleep);
+		err = modbus_write_coil(client_iface, node, addr++, true);
+		if (err != 0) {
+			LOG_ERR("FC05 failed with %d", err);
+			return 0;
+		}
 
-		// LOG_INF("Coils state 0x%02x", coil[0]);
+		k_msleep(sleep);
+		err = modbus_read_coils(client_iface, node, 0, coil, coil_qty);
+		if (err != 0) {
+			LOG_ERR("FC01 failed with %d", err);
+			return 0;
+		}
 
-		// coil[0] = 0;
-		// err = modbus_write_coils(client_iface, node, 0, coil, coil_qty);
-		// if (err != 0) {
-		// 	LOG_ERR("FC15 failed with %d", err);
-		// 	return 0;
-		// }
+		LOG_INF("Coils state 0x%02x", coil[0]);
 
-		// k_msleep(sleep);
+		coil[0] = 0;
+		err = modbus_write_coils(client_iface, node, 0, coil, coil_qty);
+		if (err != 0) {
+			LOG_ERR("FC15 failed with %d", err);
+			return 0;
+		}
+
+		k_msleep(sleep);
 	}
 }
