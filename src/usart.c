@@ -2,7 +2,7 @@
 
 
 #ifdef MICRO
-static const struct device *const usartDevice = DEVICE_DT_GET(DT_ALIAS(deviceusart));
+static const struct device *const lcdusart = DEVICE_DT_GET(DT_ALIAS(lcdusart));
 
 
 
@@ -20,17 +20,17 @@ static int usartInit(const struct device *const usart, void * cb)
 
 
 
-static void cbDevice(const struct device *dev, void *user_data)
+static void cbLcd(const struct device *dev, void *user_data)
 {
 	uint8_t c;
 	static uint8_t rx_buf_pos = 0;
 	static char rx_buf[MSG_SIZE];
-	if ((!uart_irq_update(usartDevice)) || (!uart_irq_rx_ready(usartDevice))) {
+	if ((!uart_irq_update(lcdusart)) || (!uart_irq_rx_ready(lcdusart))) {
 		return;
 	}
 
 	/* read until FIFO empty */
-	while (uart_fifo_read(usartDevice, &c, 1) == 1) {
+	while (uart_fifo_read(lcdusart, &c, 1) == 1) {
 		if ((c == '\n' || c == '\r') && rx_buf_pos > 0) {
 			/* terminate string */
 			rx_buf[rx_buf_pos] = '\0';
@@ -49,13 +49,13 @@ static void cbDevice(const struct device *dev, void *user_data)
 }
 
 
-void deviceTask()
+void lcdTask()
 {
 	uint8_t tx_buf[40];
-	usartInit(usartDevice, cbDevice);
+	usartInit(lcdusart, cbLcd);
 	while (k_msgq_get(&deviceMsg, &tx_buf, K_FOREVER) == 0)
 	{
-		int err = uart_tx(usartDevice, tx_buf, sizeof(tx_buf), SYS_FOREVER_US);
+		int err = uart_tx(lcdusart, tx_buf, sizeof(tx_buf), SYS_FOREVER_US);
 		if(err)
 		{
 			return;
@@ -66,6 +66,6 @@ void deviceTask()
 }
 
 
-K_THREAD_DEFINE(usartDeviceThread, USART_DEVICE_STACK_SIZE, deviceTask, NULL, NULL, NULL, USART_DEVICE_PRIORITY, 0, 0);
+// K_THREAD_DEFINE(lcdusartThread, USART_DEVICE_STACK_SIZE, deviceTask, NULL, NULL, NULL, USART_DEVICE_PRIORITY, 0, 0);
 
 #endif

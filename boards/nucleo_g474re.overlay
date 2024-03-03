@@ -22,7 +22,6 @@
 		led0 = &builtinled;
 		modbus = &modbus3;
 		lcdusart = &lpuart1;
-		deviceusart = &usart3;
 		die-temp0 = &die_temp;
 
 	};

@@ -51,36 +51,31 @@ uint16_t readAdc(uint8_t index)
 		.buffer_size = sizeof(buf),
 	};
 
-	while (1) {
-		printk("ADC reading[%u]:\n", count++);
-		for (int i = 0; i < TEMP_MCU_IDX; i++) {
-			volatile int32_t val_mv;
+	int32_t val_mv;
 
-			printk("- %s, channel %d: ",
-			       adc_channels[i].dev->name,
-			       adc_channels[i].channel_id);
+	LOG_INF("- %s, channel %d: ",
+			adc_channels[index].dev->name,
+			adc_channels[index].channel_id);
 
-			(void)adc_sequence_init_dt(&adc_channels[i], &sequence);
+	(void)adc_sequence_init_dt(&adc_channels[index], &sequence);
 
-			int err = adc_read_dt(&adc_channels[i], &sequence);
-			if (err < 0) {
-				printk("Could not read (%d)\n", err);
-				continue;
-			}
+	int err = adc_read_dt(&adc_channels[index], &sequence);
+	if (err < 0) {
+		LOG_INF("Could not read (%d)\n", err);
+	}
 
-				val_mv = (int32_t)buf;
+	val_mv = (int32_t)buf;
 
-			printk("%"PRId32, val_mv);
-			err = adc_raw_to_millivolts_dt(&adc_channels[i],
-						       &val_mv);
-			/* conversion to mV may not be supported, skip if not */
-			if (err < 0) {
-				printk(" (value in mV not available)\n");
-			} else {
-				printk(" = %"PRId32" mV\n", val_mv);
-			}
+	LOG_INF("%"PRId32, val_mv);
+	err = adc_raw_to_millivolts_dt(&adc_channels[index],
+						&val_mv);
+	/* conversion to mV may not be supported, skip if not */
+		if (err < 0) {
+			printk(" (value in mV not available)\n");
+		} else {
+			printk(" = %"PRId32" mV\n", val_mv);
 		}
-    }
+    
 #else
 	return 10;
 #endif

@@ -8,7 +8,6 @@
 
 #include "../inc/modbus.h"
 LOG_MODULE_REGISTER(rtuServer, LOG_LEVEL_INF);
-
 static uint16_t holding_reg[8];
 static uint8_t coils_state;
 
@@ -39,7 +38,6 @@ static int coil_wr(uint16_t addr, bool state)
 		coils_state &= ~BIT(addr);
 		on = false;
 	}
-
 
 	LOG_INF("Coil write, addr %u, %d", addr, (int)state);
 

@@ -15,6 +15,7 @@
 #include "../inc/pwms.h"
 #include "../inc/modbus.h"
 
+#define DEBUG
 
 #ifdef MICRO
 
@@ -262,6 +263,9 @@ int main(void)
 	initBoard();
 
 	bool status = initialCheckSequence();
+#ifdef DEBUG
+status = true;
+#endif
 
 	if(status)
 	{
