@@ -168,7 +168,7 @@
 	modbus3: modbus{
 		compatible = "zephyr,modbus-serial";
 		status = "okay";
-		de-gpios = < &gpiob 14 GPIO_ACTIVE_HIGH >;
+		de-gpios = < &gpiob 14 GPIO_ACTIVE_LOW >;
 	};
 };
 
