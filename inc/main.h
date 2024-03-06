@@ -16,12 +16,14 @@
 #include <zephyr/device.h>
 #include <zephyr/drivers/pwm.h>
 #include <zephyr/logging/log.h>
-#include "main.h"
+#include <stm32g4xx.h>
 #include "adcs.h"
 
 
 #define USART_SHELL_PRIORITY     7
 #define USART_DEVICE_PRIORITY    7
+
+#define CONFIG_SAMPLE_RX_THREAD_PRIORITY    7
 
 #else 
 #error "You must define MICRO or PC."
@@ -46,5 +48,7 @@
 #error "You must choose from MASTER and SLAVE."
 
 #endif
+
+void Error_Handler(void);
 #endif
 

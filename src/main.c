@@ -9,17 +9,20 @@
  * @file Sample app to demonstrate PWM.
  */
 
+#include <stm32g4xx_hal.h>
+#include <zephyr/drivers/sensor.h>
 #include "../inc/main.h"
 #include "../inc/leds.h"
 #include "../inc/adcs.h"
 #include "../inc/pwms.h"
 #include "../inc/modbus.h"
+#include "hrtim.h"
 
 #define DEBUG
 
 #ifdef MICRO
 
-#include <zephyr/drivers/sensor.h>
+
 LOG_MODULE_REGISTER(main, LOG_LEVEL_DBG);
 
 #if !DT_NODE_EXISTS(DT_NODELABEL(busytft))
@@ -53,7 +56,7 @@ void initBoard()
 	initAdcs();
 
 	initPwms();
-
+	MX_HRTIM1_Init();
 	// initCan();
 #ifdef MASTER
 	rtuClientInit();
