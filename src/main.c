@@ -20,7 +20,6 @@
 
 #define DEBUG
 
-#ifdef MICRO
 
 
 LOG_MODULE_REGISTER(main, LOG_LEVEL_DBG);
@@ -33,17 +32,14 @@ static const struct gpio_dt_spec busytft =
 	GPIO_DT_SPEC_GET_BY_IDX(DT_NODELABEL(busytft), gpios, 0);
 
 
-#endif
-
+void Error_Handler(){}
 void initBusyTft()
 {
-#ifdef MICRO
 	if(!gpio_is_ready_dt(&busytft))
 	{
 		LOG_INF("The gpio is not ready.\n");
 		return;
 	}
-#endif
 	LOG_INF("The gpio is ready to use.\n");
 }
 
@@ -86,19 +82,19 @@ void COVMode()
 	LOG_INF("Receiving paramters from master");
 #endif
 	// LOG_INF("Please enter voltage value to regulate in converter output.\n");
-	// #ifdef PC
+	// #ifdef DEBUG
 	// scanf("%d", ovRegulate);
 	// #endif
 	// LOG_INF("Please enter the minimum and maximum output voltage values for battery protection.\n");
-	// #ifdef PC
+	// #ifdef DEBUG
 	// scanf("%d %d", ovMinBattery, ovMaxBattery);
 	// #endif
 	// LOG_INF("Please enter the minimum and maximum input voltage values for battery protection.\n");
-	// #ifdef PC
+	// #ifdef DEBUG
 	// scanf("%d %d", inMinBattery, inMaxBattery);
 	// #endif
 	// LOG_INF("Please enter max charge and discharge battery current.\n");
-	// #ifdef PC
+	// #ifdef DEBUG
 	// scanf("%d %d", maxChargeBatteryCurrent, maxDischargeBatteryCurrent);
 	// #endif
 }
@@ -123,8 +119,9 @@ void uniMode()
 {
 	LOG_INF("Unidirectional Selected.\n");
 	LOG_INF("Please select 1 for COVMode and 2 for COVMode with BatChMode.\n");
-#ifdef MICRO 
+#ifdef RELEASE
 	uint8_t mode = 0;
+	while(k_msgq_get(&lcdMsg, &mode, SYS_FOREVER_MS));
 	//reading from lcd.
 #else 
 	int mode = 0;
@@ -159,14 +156,14 @@ void biMode()
 {
 	LOG_INF("Entered Bidirectional mode.\n");
 	LOG_INF("Please enter voltage battery charge and discharge.\n");
-#ifdef MICRO
-	uint16_t vBatCharge, vBatDischarge, inputVoltage;
-	inputVoltage = readAdc(VIN_IDX);
-	//vbatCharge and discharge must be provided by user.
-#else
+#ifdef DEBUG 
 	int vBatCharge, vBatDischarge, inputVoltage;
 	printf("Enter voltage baterry charge, discharge and input voltage with space between them.\n");
 	scanf("%d %d %d", &vBatCharge, &vBatDischarge, &inputVoltage);
+#else
+	uint16_t vBatCharge, vBatDischarge, inputVoltage;
+	inputVoltage = readAdc(VIN_IDX);
+	//vbatCharge and discharge must be provided by user.
 #endif
 	if(inputVoltage > vBatCharge)
 	{
@@ -182,7 +179,7 @@ void manualMode()
 {
 	LOG_INF("Entered manual mode.\n");
 	LOG_INF("Please enter 1 for Unidirectional mode and 2 for Bidirectional mode.\n");
-#ifdef PC
+#ifdef DEBUG
 	int mode = 0;
 	scanf("%d", &mode);
 #else
@@ -207,13 +204,12 @@ void manualMode()
 }
 bool initialCheckSequence()
 {
-#ifdef PC
+#ifdef DEBUG
 	printf("What are the values of the following? enter with a sapce between them:\n");
 	printf("Now these values are given by the tester user to check the logic of the program.\n");
 	printf("In real application these values will be read by the ADC.\n");
 	printf("temp temp2 temp_mcu vin vout iIn iOut.\n");
-	// int temp, temp2, tempMcu, vIn, vOut, iIn, iOut;
-	int temp, temp2, tempMcu, vIn, vOut, iIn, iOut;
+	uint8_t temp, temp2, tempMcu, vIn, vOut, iIn, iOut;
 	scanf("%d %d %d %d %d %d %d", &temp, &temp2, &tempMcu, &vIn, &vOut, &iIn, &iOut);
 #else
 	struct sensor_value tempStruct;
@@ -251,11 +247,9 @@ bool initialCheckSequence()
 
 int tftAccess()
 {
-	int userSelection;
-#ifdef PC
-	printf("Enter user selection.\n");
-	scanf("%d", &userSelection);
-#endif
+	uint8_t userSelection;
+	LOG_DBG("Enter user selection.\n");
+	while(k_msgq_get(&lcdMsg, &userSelection, SYS_FOREVER_MS));
 	LOG_INF("The user has selected option %u.\n", userSelection);
 	return userSelection;
 }
@@ -281,16 +275,13 @@ status = true;
 		LOG_INF("The led turns red.\n");
 		return 1;
 	}
-#ifdef MICRO
 	while((status) && (gpio_pin_get_dt(&busytft)));
-#else
 	int busytft = 1;
 	while((status) && (busytft))
 	{
 		printf("Set the busyness of the LCD, 1 when the lcd is busy and 0 if the lcd is free.\n");
 		scanf("%d", &busytft);
 	}
-#endif
 	LOG_INF("The LCD is ready to accept commands.\n");
 	LOG_INF("1 for automatic mode and 2 for the manual mode.\n");
 	int userSelection = tftAccess();

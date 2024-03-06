@@ -1,7 +1,6 @@
 #include "../inc/usart.h"
 
 
-#ifdef MICRO
 static const struct device *const lcdusart = DEVICE_DT_GET(DT_ALIAS(lcdusart));
 
 
@@ -36,7 +35,7 @@ static void cbLcd(const struct device *dev, void *user_data)
 			rx_buf[rx_buf_pos] = '\0';
 
 			/* if queue is full, message is silently dropped */
-			k_msgq_put(&deviceMsg, &rx_buf, K_NO_WAIT);
+			k_msgq_put(&lcdMsg, &rx_buf, K_NO_WAIT);
 
 			/* reset the buffer (it was copied to the msgq) */
 			rx_buf_pos = 0;
@@ -53,7 +52,7 @@ void lcdTask()
 {
 	uint8_t tx_buf[40];
 	usartInit(lcdusart, cbLcd);
-	while (k_msgq_get(&deviceMsg, &tx_buf, K_FOREVER) == 0)
+	while (k_msgq_get(&lcdMsg, &tx_buf, K_FOREVER) == 0)
 	{
 		int err = uart_tx(lcdusart, tx_buf, sizeof(tx_buf), SYS_FOREVER_US);
 		if(err)
@@ -67,5 +66,3 @@ void lcdTask()
 
 
 // K_THREAD_DEFINE(lcdusartThread, USART_DEVICE_STACK_SIZE, deviceTask, NULL, NULL, NULL, USART_DEVICE_PRIORITY, 0, 0);
-
-#endif

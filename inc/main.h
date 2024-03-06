@@ -1,16 +1,6 @@
 #ifndef __MAIN__H
 #define __MAIN__H
-
-
-
-#define MICRO 
-#ifdef PC
-#define LOG_INF	printf
-#define printk  printf
-#include <stdint.h>
-#include <stdio.h>
-#include <stdbool.h>
-#elif defined MICRO
+ 
 #include <zephyr/kernel.h>
 #include <zephyr/sys/printk.h>
 #include <zephyr/device.h>
@@ -19,16 +9,17 @@
 #include <stm32g4xx.h>
 #include "adcs.h"
 
+#define DEBUG
+#ifdef RELEASE
 
+#elif defined DEBUG
+#else
+#error "you must define DEBUG or RELEASE"
+#endif
 #define USART_SHELL_PRIORITY     7
 #define USART_DEVICE_PRIORITY    7
 
 #define CONFIG_SAMPLE_RX_THREAD_PRIORITY    7
-
-#else 
-#error "You must define MICRO or PC."
-
-#endif
 
 #define TB_INIT				80
 #define VIN_INIT			100
@@ -38,16 +29,6 @@
 #define MAX_INPUT_CURRENT	25
 #define MAX_OUTPUT_CURRENT	20
 
-#define MASTER 
-
-#ifdef MASTER
-
-#elif defined SLAVE
-
-#else 
-#error "You must choose from MASTER and SLAVE."
-
-#endif
 
 void Error_Handler(void);
 #endif

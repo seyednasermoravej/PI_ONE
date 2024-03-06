@@ -3,7 +3,6 @@
 
 #include "../inc/pwms.h"
 
-#ifdef MICRO
 #if !DT_NODE_EXISTS(DT_PATH(pwmleds, allpwms)) || \
 	!DT_NODE_HAS_PROP(DT_PATH(pwmleds, allpwms), pwms)
 #error "No suitable devicetree overlay specified"
@@ -19,11 +18,9 @@ static const struct pwm_dt_spec pwm_channels[] = {
 };
 LOG_MODULE_REGISTER(pwms, LOG_LEVEL_DBG);
 
-#endif
 
 void initPwms()
 {
-#ifdef MICRO
 	/* Configure channels individually prior to sampling. */
 	for (size_t i = 0; i < ARRAY_SIZE(pwm_channels); i++) {
         if (!pwm_is_ready_dt(&pwm_channels[i])) {
@@ -32,7 +29,6 @@ void initPwms()
             return;
         }
     }
-#endif
 	LOG_INF("PWM initialization finished.\n");
 }
 
@@ -41,24 +37,20 @@ void pwmSet(uint8_t idx, uint32_t frequency, float dutycycle)
 {
     uint32_t period = 1000000000/frequency; 
     uint32_t pulse = (1000000000 * dutycycle) / frequency;
-    #ifdef MICRO
 	int err = pwm_set_dt(&pwm_channels[idx], period, pulse);
     if (err < 0)
         return;
-    #endif
     LOG_INF("The PWM is set to frequency: %u, pulse: %u.\n", frequency, pulse);
 }
 
 void turnOffAllPWMs()
 {
-#ifdef MICRO
 	for (size_t i = 0; i < ARRAY_SIZE(pwm_channels); i++)
     {
         int err = pwm_set_dt(&pwm_channels[i], 10000, 0);
             LOG_INF("PWM device %s turned off.\n",
                 pwm_channels[i].dev->name);
     }
-#endif
     LOG_INF("All pwm channels are turned off.\n");
 
 }

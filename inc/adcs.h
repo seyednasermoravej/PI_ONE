@@ -7,11 +7,11 @@
 #define I_IN_IDX                    3 
 #define VOUT_IDX                    4 
 #define I_OUT_IDX                   5 
-#define TEMP_MCU_IDX                6 
+#define TEMP_MCU_IDX                6
+#define FAN_IN_IDX                  7 
 
 #include "main.h"
 
-#ifdef MICRO
 /*adc*/
 #include <zephyr/device.h>
 #include <zephyr/devicetree.h>
@@ -20,7 +20,6 @@
 #include <zephyr/sys/printk.h>
 #include <zephyr/sys/util.h>
 
-#endif
 
 int initAdcs();
 uint16_t readAdc(uint8_t index);

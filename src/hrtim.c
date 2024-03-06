@@ -44,7 +44,7 @@ void MX_HRTIM1_Init(void)
   /* USER CODE END HRTIM1_Init 1 */
   hhrtim1.Instance = HRTIM1;
   hhrtim1.Init.HRTIMInterruptResquests = HRTIM_IT_NONE;
-  hhrtim1.Init.SyncOptions = HRTIM_SYNCOPTION_NONE;
+  hhrtim1.Init.SyncOptions = HRTIM_SYNCOPTION_MASTER;
   if (HAL_HRTIM_Init(&hhrtim1) != HAL_OK)
   {
     Error_Handler();

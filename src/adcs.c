@@ -1,6 +1,5 @@
 #include "../inc/adcs.h"
 
-#ifdef MICRO
 
 #if !DT_NODE_EXISTS(DT_PATH(zephyr_user)) || \
 	!DT_NODE_HAS_PROP(DT_PATH(zephyr_user), io_channels)
@@ -17,10 +16,8 @@ static const struct adc_dt_spec adc_channels[] = {
 };
 LOG_MODULE_REGISTER(adcs, LOG_LEVEL_DBG);
 
-#endif
 int initAdcs()
 {
-#ifdef MICRO
 	/* Configure channels individually prior to sampling. */
 	for (size_t i = 0; i < TEMP_MCU_IDX; i++) {
 		if (!adc_is_ready_dt(&adc_channels[i])) {
@@ -35,15 +32,12 @@ int initAdcs()
 		}
 	}
 
-#endif
 	LOG_INF("ADC initialization finished.\n");
 }
 
 
 uint16_t readAdc(uint8_t index)
 {
-#ifdef MICRO
-	uint32_t count = 0;
 	uint16_t buf;
 	struct adc_sequence sequence = {
 		.buffer = &buf,
@@ -75,8 +69,6 @@ uint16_t readAdc(uint8_t index)
 		} else {
 			printk(" = %"PRId32" mV\n", val_mv);
 		}
+	return err;
     
-#else
-	return 10;
-#endif
 }

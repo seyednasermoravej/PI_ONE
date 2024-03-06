@@ -8,11 +8,9 @@ extern "C"
 {
 #endif
 #include "main.h"
-#ifdef MICRO
 #include <zephyr/kernel.h>
 
-extern struct k_msgq deviceMsg;
-#endif
+extern struct k_msgq lcdMsg;
 #ifdef __cplusplus
 }
 #endif

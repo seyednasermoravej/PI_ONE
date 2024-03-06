@@ -1,7 +1,7 @@
 /{
 	pwmleds {
 		allpwms: allpwms{
-			pwms = <&pwm1 1 PWM_KHZ(100) PWM_POLARITY_NORMAL>, < &pwm1 2 PWM_KHZ(100) PWM_POLARITY_NORMAL>, < &pwm3 2 PWM_KHZ(100) PWM_POLARITY_NORMAL>;
+			pwms = <&pwm1 1 PWM_KHZ(100) PWM_POLARITY_NORMAL>, < &pwm1 2 PWM_KHZ(100) PWM_POLARITY_NORMAL>, < &pwm3 1 PWM_KHZ(100) PWM_POLARITY_NORMAL>, < &pwm3 2 PWM_KHZ(100) PWM_POLARITY_NORMAL>, < &pwm3 3 PWM_KHZ(100) PWM_POLARITY_NORMAL>;
 
 		};	
 	};
@@ -27,7 +27,7 @@
 	};
 
 	zephyr,user {
-		io-channels = <&adc4 5>, <&adc3 12>, <&adc1 1>, <&adc1 2>, <&adc1 9>, <&adc1 8>, <&adc1 16> ;
+		io-channels = <&adc4 5>, <&adc3 12>, <&adc1 1>, <&adc1 2>, <&adc1 9>, <&adc1 8>, <&adc1 16> <&adc2 17>;
 	};
 	chosen {
 		zephyr,console = &usart2;
@@ -56,7 +56,7 @@
 
 	pwm3: pwm {
 		status = "okay";
-		pinctrl-0 = <&tim3_ch2_pa7>;
+		pinctrl-0 = < &tim3_ch1_pc6 &tim3_ch2_pa7 &tim3_ch3_pc8>;
 		pinctrl-names = "default";
 	};
 };
@@ -107,6 +107,26 @@
 
 	};
 };
+
+&adc2 {
+	st,adc-prescaler = < 2 >;
+	status = "okay";
+	#address-cells = <1>;
+	#size-cells = <0>;
+	st,adc-clock-source = <SYNC>;
+	pinctrl-0 = <&adc2_in17_pa4>;
+	pinctrl-names = "default";
+	channel@11{
+		reg = <0x11>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,resolution = <12>;
+
+	};
+
+};
+
 
 &adc3 {
 	st,adc-prescaler = < 2 >;
