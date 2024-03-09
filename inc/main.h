@@ -9,13 +9,25 @@
 #include <stm32g4xx.h>
 #include "adcs.h"
 
-#define DEBUG
+#define MASTER
+
+#define RELEASE
 #ifdef RELEASE
 
 #elif defined DEBUG
 #else
 #error "you must define DEBUG or RELEASE"
 #endif
+
+
+#ifdef MASTER 
+
+#elif defined SLAVE 
+#else
+#error "you must define MASTER or SLAVE."
+#endif
+
+
 #define USART_SHELL_PRIORITY     7
 #define USART_DEVICE_PRIORITY    7
 

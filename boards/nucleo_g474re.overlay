@@ -27,7 +27,7 @@
 	};
 
 	zephyr,user {
-		io-channels = <&adc4 5>, <&adc3 12>, <&adc1 1>, <&adc1 2>, <&adc1 9>, <&adc1 8>, <&adc1 16> <&adc2 17>;
+		io-channels = <&adc4 5>, <&adc3 12>, <&adc1 1>, <&adc1 2>, <&adc1 9>, <&adc1 8>, <&adc1 16>, <&adc2 17>;
 	};
 	chosen {
 		zephyr,console = &usart2;

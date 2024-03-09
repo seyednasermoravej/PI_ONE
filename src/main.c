@@ -17,6 +17,7 @@
 #include "../inc/pwms.h"
 #include "../inc/modbus.h"
 #include "hrtim.h"
+#include "queues.h"
 
 #define DEBUG
 
@@ -53,6 +54,7 @@ void initBoard()
 
 	initPwms();
 	MX_HRTIM1_Init();
+
 	// initCan();
 #ifdef MASTER
 	rtuClientInit();
@@ -119,14 +121,9 @@ void uniMode()
 {
 	LOG_INF("Unidirectional Selected.\n");
 	LOG_INF("Please select 1 for COVMode and 2 for COVMode with BatChMode.\n");
-#ifdef RELEASE
 	uint8_t mode = 0;
-	while(k_msgq_get(&lcdMsg, &mode, SYS_FOREVER_MS));
+	while(k_msgq_get(&lcdMsg, &mode, K_FOREVER));
 	//reading from lcd.
-#else 
-	int mode = 0;
-	scanf("%d", &mode);
-#endif
 	if(mode == 1)
 	{
 		LOG_INF("COVMode is selected.\n");
@@ -249,7 +246,7 @@ int tftAccess()
 {
 	uint8_t userSelection;
 	LOG_DBG("Enter user selection.\n");
-	while(k_msgq_get(&lcdMsg, &userSelection, SYS_FOREVER_MS));
+	while(k_msgq_get(&lcdMsg, &userSelection, K_FOREVER));
 	LOG_INF("The user has selected option %u.\n", userSelection);
 	return userSelection;
 }
