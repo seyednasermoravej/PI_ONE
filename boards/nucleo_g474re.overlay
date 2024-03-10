@@ -1,7 +1,8 @@
 /{
 	pwmleds {
 		allpwms: allpwms{
-			pwms = <&pwm1 1 PWM_KHZ(100) PWM_POLARITY_NORMAL>, < &pwm1 2 PWM_KHZ(100) PWM_POLARITY_NORMAL>, < &pwm3 1 PWM_KHZ(100) PWM_POLARITY_NORMAL>, < &pwm3 2 PWM_KHZ(100) PWM_POLARITY_NORMAL>, < &pwm3 3 PWM_KHZ(100) PWM_POLARITY_NORMAL>;
+			pwms = < &pwm3 1 PWM_KHZ(100) PWM_POLARITY_NORMAL>, < &pwm3 2 PWM_KHZ(100) PWM_POLARITY_NORMAL>, < &pwm3 3 PWM_KHZ(100) PWM_POLARITY_NORMAL>;
+			// pwms = <&pwm1 1 PWM_KHZ(100) PWM_POLARITY_NORMAL>, < &pwm1 2 PWM_KHZ(100) PWM_POLARITY_NORMAL>, < &pwm3 1 PWM_KHZ(100) PWM_POLARITY_NORMAL>, < &pwm3 2 PWM_KHZ(100) PWM_POLARITY_NORMAL>, < &pwm3 3 PWM_KHZ(100) PWM_POLARITY_NORMAL>;
 
 		};	
 	};
@@ -27,7 +28,7 @@
 	};
 
 	zephyr,user {
-		io-channels = <&adc4 5>, <&adc3 12>, <&adc1 1>, <&adc1 2>, <&adc1 9>, <&adc1 8>, <&adc1 16>, <&adc2 17>;
+		io-channels = <&adc4 5>, <&adc3 12>, <&adc1 1>, <&adc1 2>, <&adc1 9>, <&adc1 8>, <&adc2 17>, <&adc1 16>;
 	};
 	chosen {
 		zephyr,console = &usart2;
@@ -39,16 +40,16 @@
 	status = "disabled";
 };
 
-&timers1 {
-	st,prescaler = <1>;
-	status = "okay";
+// &timers1 {
+// 	st,prescaler = <1>;
+// 	status = "okay";
 
-	pwm1: pwm {
-		status = "okay";
-		pinctrl-0 = <&tim1_ch1_pa8 &tim1_ch2_pa9>;
-		pinctrl-names = "default";
-	};
-};
+// 	pwm1: pwm {
+// 		status = "okay";
+// 		pinctrl-0 = <&tim1_ch1_pa8 &tim1_ch2_pa9>;
+// 		pinctrl-names = "default";
+// 	};
+// };
 
 &timers3 {
 	st,prescaler = <1>;

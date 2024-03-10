@@ -19,7 +19,6 @@
 #include "hrtim.h"
 #include "queues.h"
 
-#define DEBUG
 
 
 
@@ -55,12 +54,12 @@ void initBoard()
 	initPwms();
 	MX_HRTIM1_Init();
 
-	// initCan();
-#ifdef MASTER
-	rtuClientInit();
-#else
-	rtuServerInit();
-#endif
+// 	// initCan();
+// #ifdef MASTER
+// 	rtuClientInit();
+// #else
+// 	rtuServerInit();
+// #endif
 }
 
 
@@ -208,16 +207,17 @@ bool initialCheckSequence()
 	printf("temp temp2 temp_mcu vin vout iIn iOut.\n");
 	uint8_t temp, temp2, tempMcu, vIn, vOut, iIn, iOut;
 	scanf("%d %d %d %d %d %d %d", &temp, &temp2, &tempMcu, &vIn, &vOut, &iIn, &iOut);
-#else
+#elif defined RELEASE
 	struct sensor_value tempStruct;
 	int32_t temp;
-	// uint16_t temp2 = readAdc(TEMP2_IDX);
-	// uint16_t tempMcu = readAdc(TEMP_MCU_IDX);
+	uint16_t temp1 = readAdc(TEMP_IDX);
+	uint16_t temp2 = readAdc(TEMP2_IDX);
 	sensor_sample_fetch(tempSensor);
 	uint16_t vIn = readAdc(VIN_IDX);
 	uint16_t vOut = readAdc(VOUT_IDX);
 	uint16_t iIn = readAdc(I_IN_IDX);
 	uint16_t iOut = readAdc(I_OUT_IDX);
+	uint16_t fan = readAdc(FAN_IN_IDX);
 
 	sensor_channel_get(tempSensor, SENSOR_CHAN_DIE_TEMP, &tempStruct);
 
@@ -226,14 +226,15 @@ bool initialCheckSequence()
 
 #endif
 
-	// LOG_INF("Temp value is: %d\n", temp);
-	// LOG_INF("temp2 value is: %d\n", temp2);
-	// LOG_INF("temp mcu value is: %d\n", tempMcu);
+	LOG_INF("Temp value is: %d\n", temp1);
+	LOG_INF("temp2 value is: %d\n", temp2);
+	LOG_INF("temp mcu value is: %d\n", temp);
 	LOG_INF("TB value is: %d\n", temp);
 	LOG_INF("vin value is: %d\n", vIn);
 	LOG_INF("vout value is: %d\n", vOut);
 	LOG_INF("I in value is: %d\n", iIn);
 	LOG_INF("I out value is: %d\n", iOut);
+	LOG_INF("fan in value is: %d\n", fan);
 	if((temp < TB_INIT) && (vIn < VIN_INIT) && ( vOut < VOUT_INIT) && (iIn < I_IN_INIT) && (iOut < I_OUT_INIT))
 	{
 		return true;
@@ -254,7 +255,7 @@ int tftAccess()
 int main(void)
 {
 
-	initBoard();
+initBoard();
 
 	bool status = initialCheckSequence();
 #ifdef DEBUG
@@ -273,7 +274,7 @@ status = true;
 		return 1;
 	}
 	while((status) && (gpio_pin_get_dt(&busytft)));
-	int busytft = 1;
+	int busytft = 0;
 	while((status) && (busytft))
 	{
 		printf("Set the busyness of the LCD, 1 when the lcd is busy and 0 if the lcd is free.\n");

@@ -7,8 +7,8 @@
 #define I_IN_IDX                    3 
 #define VOUT_IDX                    4 
 #define I_OUT_IDX                   5 
-#define TEMP_MCU_IDX                6
-#define FAN_IN_IDX                  7 
+#define FAN_IN_IDX                  6
+#define TEMP_MCU_IDX                7 
 
 #include "main.h"
 

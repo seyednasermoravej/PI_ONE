@@ -10,7 +10,6 @@
 #include "adcs.h"
 
 #define MASTER
-
 #define RELEASE
 #ifdef RELEASE
 
