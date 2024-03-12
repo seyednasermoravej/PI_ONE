@@ -2,6 +2,7 @@
 #define __PWMS__H_
 
 #include "../inc/pwms.h"
+#include "hrtim.h"
 
 #if !DT_NODE_EXISTS(DT_PATH(pwmleds, allpwms)) || \
 	!DT_NODE_HAS_PROP(DT_PATH(pwmleds, allpwms), pwms)
@@ -29,6 +30,13 @@ void initPwms()
             return;
         }
     }
+
+	MX_HRTIM1_Init();
+    HAL_HRTIM_WaveformOutputStart(&hhrtim1, HRTIM_OUTPUT_TA1 + HRTIM_OUTPUT_TA2);
+    HAL_HRTIM_WaveformCounterStart(&hhrtim1, HRTIM_TIMERID_TIMER_A);
+    pwmSet(0, 100000, 0.2);
+    pwmSet(1, 100000, 0.5);
+    pwmSet(2, 100000, 0.8);
 	LOG_INF("PWM initialization finished.\n");
 }
 

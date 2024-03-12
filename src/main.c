@@ -52,9 +52,8 @@ void initBoard()
 	initAdcs();
 
 	initPwms();
-	MX_HRTIM1_Init();
 
-// 	// initCan();
+	initCan();
 // #ifdef MASTER
 // 	rtuClientInit();
 // #else

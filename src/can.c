@@ -36,8 +36,8 @@ const struct device *can_dev;
 struct isotp_recv_ctx recv_ctx_8_0;
 struct isotp_recv_ctx recv_ctx_0_5;
 
-K_THREAD_STACK_DEFINE(rx_8_0_thread_stack, CONFIG_SAMPLE_RX_THREAD_STACK_SIZE);
-K_THREAD_STACK_DEFINE(rx_0_5_thread_stack, CONFIG_SAMPLE_RX_THREAD_STACK_SIZE);
+K_THREAD_STACK_DEFINE(rx_8_0_thread_stack, CONFIG_RX_THREAD_STACK_SIZE);
+K_THREAD_STACK_DEFINE(rx_0_5_thread_stack, CONFIG_RX_THREAD_STACK_SIZE);
 struct k_thread rx_8_0_thread_data;
 struct k_thread rx_0_5_thread_data;
 

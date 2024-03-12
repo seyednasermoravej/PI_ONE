@@ -3,7 +3,7 @@
 
 #include "main.h"
 #include <zephyr/canbus/isotp.h>
-CONFIG_SAMPLE_RX_THREAD_STACK_SIZE      1024
-void initCan();
+#define CONFIG_RX_THREAD_STACK_SIZE      1024
+int initCan();
 
 #endif

@@ -17,6 +17,9 @@
 #define DATA_LED_IDX                3 
 #define Buzzer_IDX                  4
 
+
+#define TIMA_PERIOD                 1
+
 #define MAX_PERIOD 10000
 void initPwms();
 void pwmSet(uint8_t idx, uint32_t frequency, float dutycycle);
