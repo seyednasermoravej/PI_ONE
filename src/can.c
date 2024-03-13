@@ -7,12 +7,14 @@ const struct isotp_fc_opts fc_opts_0_5 = {.bs = 0, .stmin = 5};
 
 const struct isotp_msg_id rx_addr_8_0 = {
 	.std_id = 0x80,
+	// .std_id = 0x180,
 #ifdef CONFIG_SAMPLE_CAN_FD_MODE
 	.flags = ISOTP_MSG_FDF | ISOTP_MSG_BRS,
 #endif
 };
 const struct isotp_msg_id tx_addr_8_0 = {
 	.std_id = 0x180,
+	// .std_id = 0x80,
 #ifdef CONFIG_SAMPLE_CAN_FD_MODE
 	.dl = 64,
 	.flags = ISOTP_MSG_FDF | ISOTP_MSG_BRS,
@@ -20,12 +22,14 @@ const struct isotp_msg_id tx_addr_8_0 = {
 };
 const struct isotp_msg_id rx_addr_0_5 = {
 	.std_id = 0x01,
+	// .std_id = 0x101,
 #ifdef CONFIG_SAMPLE_CAN_FD_MODE
 	.flags = ISOTP_MSG_FDF | ISOTP_MSG_BRS,
 #endif
 };
 const struct isotp_msg_id tx_addr_0_5 = {
 	.std_id = 0x101,
+	// .std_id = 0x01,
 #ifdef CONFIG_SAMPLE_CAN_FD_MODE
 	.dl = 64,
 	.flags = ISOTP_MSG_FDF | ISOTP_MSG_BRS,
@@ -49,44 +53,44 @@ const char tx_data_large[] =
 "|  |____||___/|____|       ||  |_|     |\n"
 "========================================\n";
 
-const char tx_data_small[] = "This is the sample test for the short payload\n";
+const char tx_data_small[] = "message from nucleo\n";
 
-void rx_8_0_thread(void *arg1, void *arg2, void *arg3)
-{
-	ARG_UNUSED(arg1);
-	ARG_UNUSED(arg2);
-	ARG_UNUSED(arg3);
-	int ret, rem_len, received_len;
-	struct net_buf *buf;
+// void rx_8_0_thread(void *arg1, void *arg2, void *arg3)
+// {
+// 	ARG_UNUSED(arg1);
+// 	ARG_UNUSED(arg2);
+// 	ARG_UNUSED(arg3);
+// 	int ret, rem_len, received_len;
+// 	struct net_buf *buf;
 
-	ret = isotp_bind(&recv_ctx_8_0, can_dev,
-			 &tx_addr_8_0, &rx_addr_8_0,
-			 &fc_opts_8_0, K_FOREVER);
-	if (ret != ISOTP_N_OK) {
-		printk("Failed to bind to rx ID %d [%d]\n",
-		       rx_addr_8_0.std_id, ret);
-		return;
-	}
+// 	ret = isotp_bind(&recv_ctx_8_0, can_dev,
+// 			 &tx_addr_8_0, &rx_addr_8_0,
+// 			 &fc_opts_8_0, K_FOREVER);
+// 	if (ret != ISOTP_N_OK) {
+// 		printk("Failed to bind to rx ID %d [%d]\n",
+// 		       rx_addr_8_0.std_id, ret);
+// 		return;
+// 	}
 
-	while (1) {
-		received_len = 0;
-		do {
-			rem_len = isotp_recv_net(&recv_ctx_8_0, &buf,
-						 K_MSEC(2000));
-			if (rem_len < 0) {
-				printk("Receiving error [%d]\n", rem_len);
-				break;
-			}
+// 	while (1) {
+// 		received_len = 0;
+// 		do {
+// 			rem_len = isotp_recv_net(&recv_ctx_8_0, &buf,
+// 						 K_MSEC(2000));
+// 			if (rem_len < 0) {
+// 				printk("Receiving error [%d]\n", rem_len);
+// 				break;
+// 			}
 
-			while (buf != NULL) {
-				received_len += buf->len;
-				printk("%.*s", buf->len, buf->data);
-				buf = net_buf_frag_del(NULL, buf);
-			}
-		} while (rem_len);
-		printk("Got %d bytes in total\n", received_len);
-	}
-}
+// 			while (buf != NULL) {
+// 				received_len += buf->len;
+// 				printk("%.*s", buf->len, buf->data);
+// 				buf = net_buf_frag_del(NULL, buf);
+// 			}
+// 		} while (rem_len);
+// 		printk("Got %d bytes in total\n", received_len);
+// 	}
+// }
 
 void rx_0_5_thread(void *arg1, void *arg2, void *arg3)
 {
@@ -131,7 +135,7 @@ void send_complette_cb(int error_nr, void *arg)
 int initCan(void)
 {
 	k_tid_t tid;
-	static struct isotp_send_ctx send_ctx_8_0;
+	// static struct isotp_send_ctx send_ctx_8_0;
 	static struct isotp_send_ctx send_ctx_0_5;
 	int ret = 0;
 
@@ -155,15 +159,15 @@ int initCan(void)
 		return 0;
 	}
 
-	tid = k_thread_create(&rx_8_0_thread_data, rx_8_0_thread_stack,
-			      K_THREAD_STACK_SIZEOF(rx_8_0_thread_stack),
-			      rx_8_0_thread, NULL, NULL, NULL,
-			      CONFIG_SAMPLE_RX_THREAD_PRIORITY, 0, K_NO_WAIT);
-	if (!tid) {
-		printk("ERROR spawning rx thread\n");
-		return 0;
-	}
-	k_thread_name_set(tid, "rx_8_0");
+	// tid = k_thread_create(&rx_8_0_thread_data, rx_8_0_thread_stack,
+	// 		      K_THREAD_STACK_SIZEOF(rx_8_0_thread_stack),
+	// 		      rx_8_0_thread, NULL, NULL, NULL,
+	// 		      CONFIG_SAMPLE_RX_THREAD_PRIORITY, 0, K_NO_WAIT);
+	// if (!tid) {
+	// 	printk("ERROR spawning rx thread\n");
+	// 	return 0;
+	// }
+	// k_thread_name_set(tid, "rx_8_0");
 
 	tid = k_thread_create(&rx_0_5_thread_data, rx_0_5_thread_stack,
 			      K_THREAD_STACK_SIZEOF(rx_0_5_thread_stack),
@@ -188,12 +192,12 @@ int initCan(void)
 			       tx_addr_0_5.std_id, ret);
 		}
 
-		ret = isotp_send(&send_ctx_8_0, can_dev,
-				 tx_data_large, sizeof(tx_data_large),
-				 &tx_addr_8_0, &rx_addr_8_0, NULL, NULL);
-		if (ret != ISOTP_N_OK) {
-			printk("Error while sending data to ID %d [%d]\n",
-			       tx_addr_8_0.std_id, ret);
-		}
+		// ret = isotp_send(&send_ctx_8_0, can_dev,
+		// 		 tx_data_large, sizeof(tx_data_large),
+		// 		 &tx_addr_8_0, &rx_addr_8_0, NULL, NULL);
+		// if (ret != ISOTP_N_OK) {
+		// 	printk("Error while sending data to ID %d [%d]\n",
+		// 	       tx_addr_8_0.std_id, ret);
+		// }
 	}
 }
