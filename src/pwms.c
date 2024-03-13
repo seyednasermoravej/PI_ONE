@@ -38,6 +38,7 @@ void initPwms()
     pwmSet(1, 100000, 0.5);
     pwmSet(2, 100000, 0.8);
 	LOG_INF("PWM initialization finished.\n");
+    turnOffAllPWMs();
 }
 
 
@@ -59,6 +60,7 @@ void turnOffAllPWMs()
             LOG_INF("PWM device %s turned off.\n",
                 pwm_channels[i].dev->name);
     }
+    HAL_HRTIM_WaveformOutputStop(&hhrtim1, HRTIM_OUTPUT_TA1 + HRTIM_OUTPUT_TA2);
     LOG_INF("All pwm channels are turned off.\n");
 
 }
