@@ -75,9 +75,10 @@
 	channel@1{
 		reg = < 1 >;
 		zephyr,gain = "ADC_GAIN_1";
-		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,reference = "ADC_REF_INTERNAL";	
 		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
 		zephyr,resolution = <12>;
+		zephyr,vref-mv =<2048>;
 
 	};
 
@@ -212,3 +213,7 @@
 //hrtim1_cha2_pa9
 // hrtim1_scin_pb6
 //hrtim1_scout_pb1 
+&vref {
+	status = "okay";
+	vrefint-cal-mv = <2048>;
+};

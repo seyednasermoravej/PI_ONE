@@ -35,7 +35,16 @@ extern "C" {
 extern HRTIM_HandleTypeDef hhrtim1;
 
 /* USER CODE BEGIN Private defines */
-
+/*
+  The duration of pwm is equal to (TIMA_PERIOD / (170000000 * 32)).
+  So, for the given value, duration = 54400/(170000000 * 32) = 10 us
+*/
+#define TIMA_PERIOD 54400 
+/*
+  The dead time between each channel is equal to (DEAD_TIME / (170000000 * 8)).
+  For the given value, dead time = 1360/(170000000 * 8) = 1 us.
+*/
+#define	DEAD_TIME 1360	//
 /* USER CODE END Private defines */
 
 void MX_HRTIM1_Init(void);
@@ -43,7 +52,6 @@ void MX_HRTIM1_Init(void);
 void HAL_HRTIM_MspPostInit(HRTIM_HandleTypeDef *hhrtim);
 
 /* USER CODE BEGIN Prototypes */
-
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

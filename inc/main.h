@@ -30,7 +30,7 @@
 #define USART_SHELL_PRIORITY     7
 #define USART_DEVICE_PRIORITY    7
 
-#define CONFIG_SAMPLE_RX_THREAD_PRIORITY    7
+// #define CONFIG_SAMPLE_RX_THREAD_PRIORITY    7
 
 #define TB_INIT				80
 #define VIN_INIT			100
@@ -40,7 +40,10 @@
 #define MAX_INPUT_CURRENT	25
 #define MAX_OUTPUT_CURRENT	20
 
+#define NUMBERS_OF_SLAVES   3
 
 void Error_Handler(void);
+
+void HAL_MspInit(void);
 #endif
 

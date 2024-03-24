@@ -11,17 +11,13 @@
 #define GREEN_FREQUENCY             100
 #define RED_FREQUENCY               200
 
-#define HRTIM1_CHA1_IDX             0 
-#define HRTIM1_CHA2_IDX             1 
-#define FAN_Reg_speed_IDX           2
-#define DATA_LED_IDX                3 
-#define Buzzer_IDX                  4
-
-
-#define TIMA_PERIOD                 1
+#define FAN_Reg_speed_IDX           0 
+#define DATA_LED_IDX                1 
+#define Buzzer_IDX                  2 
+#define HRTIM_IDX                   10
 
 #define MAX_PERIOD 10000
-void initPwms();
+void initPwms(float dutycycle);
 void pwmSet(uint8_t idx, uint32_t frequency, float dutycycle);
 void turnOffAllPWMs();
 #endif

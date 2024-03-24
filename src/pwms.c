@@ -3,7 +3,7 @@
 
 #include "../inc/pwms.h"
 #include "hrtim.h"
-
+HRTIM_CompareCfgTypeDef pCompareCfgMy = {0};
 #if !DT_NODE_EXISTS(DT_PATH(pwmleds, allpwms)) || \
 	!DT_NODE_HAS_PROP(DT_PATH(pwmleds, allpwms), pwms)
 #error "No suitable devicetree overlay specified"
@@ -20,7 +20,7 @@ static const struct pwm_dt_spec pwm_channels[] = {
 LOG_MODULE_REGISTER(pwms, LOG_LEVEL_DBG);
 
 
-void initPwms()
+void initPwms(float dutycycle)
 {
 	/* Configure channels individually prior to sampling. */
 	for (size_t i = 0; i < ARRAY_SIZE(pwm_channels); i++) {
@@ -32,24 +32,39 @@ void initPwms()
     }
 
 	MX_HRTIM1_Init();
+
+    pCompareCfgMy.CompareValue = TIMA_PERIOD * dutycycle;
+    if (HAL_HRTIM_WaveformCompareConfig(&hhrtim1, HRTIM_TIMERINDEX_TIMER_A, HRTIM_COMPAREUNIT_1, &pCompareCfgMy) != HAL_OK)
+    {
+            Error_Handler();
+    }
     HAL_HRTIM_WaveformOutputStart(&hhrtim1, HRTIM_OUTPUT_TA1 + HRTIM_OUTPUT_TA2);
     HAL_HRTIM_WaveformCounterStart(&hhrtim1, HRTIM_TIMERID_TIMER_A);
-    pwmSet(0, 100000, 0.2);
-    pwmSet(1, 100000, 0.5);
-    pwmSet(2, 100000, 0.8);
 	LOG_INF("PWM initialization finished.\n");
-    turnOffAllPWMs();
+    // turnOffAllPWMs();
 }
-
 
 void pwmSet(uint8_t idx, uint32_t frequency, float dutycycle)
 {
-    uint32_t period = 1000000000/frequency; 
-    uint32_t pulse = (1000000000 * dutycycle) / frequency;
-	int err = pwm_set_dt(&pwm_channels[idx], period, pulse);
-    if (err < 0)
-        return;
-    LOG_INF("The PWM is set to frequency: %u, pulse: %u.\n", frequency, pulse);
+    if(idx == HRTIM_IDX)
+    {
+        pCompareCfgMy.CompareValue = TIMA_PERIOD * dutycycle;
+        if (HAL_HRTIM_WaveformCompareConfig(&hhrtim1, HRTIM_TIMERINDEX_TIMER_A, HRTIM_COMPAREUNIT_1, &pCompareCfgMy) != HAL_OK)
+        {
+                Error_Handler();
+        }
+        LOG_INF("The HRTIM PWM is set");
+    }
+    else
+    {
+        uint32_t period = 1000000000/frequency; 
+        uint32_t pulse = (1000000000 * dutycycle) / frequency;
+        int err = pwm_set_dt(&pwm_channels[idx], period, pulse);
+        if (err < 0)
+            return;
+        LOG_INF("The PWM is set to frequency: %u, pulse: %u.\n", frequency, pulse);
+
+    }
 }
 
 void turnOffAllPWMs()
