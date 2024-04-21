@@ -16,6 +16,7 @@
 #include "../inc/adcs.h"
 #include "../inc/pwms.h"
 #include "../inc/modbus.h"
+#include "counter.h"
 #include "hrtim.h"
 #include "queues.h"
 
@@ -33,6 +34,10 @@ static const struct gpio_dt_spec busytft =
 
 
 void Error_Handler(){}
+float rawCurrentToRealCurrent(uint8_t index);
+float rawVoltageToRealVoltage(uint8_t index);
+float rawTempToRealTemp(uint8_t index);
+
 void initBusyTft()
 {
 	if(!gpio_is_ready_dt(&busytft))
@@ -45,13 +50,16 @@ void initBusyTft()
 
 void initBoard()
 {
+
 	initLeds();
 
 	initBusyTft();
 
 	initAdcs();
 	initPwms(0.5);
-	HAL_MspInit();
+
+	initCounter();
+	// HAL_MspInit();
 	// initCan();
 // #ifdef MASTER
 // 	rtuClientInit();
@@ -222,10 +230,10 @@ bool initialCheckSequence()
 	uint16_t temp1 = readAdc(TEMP_IDX);
 	uint16_t temp2 = readAdc(TEMP2_IDX);
 	sensor_sample_fetch(tempSensor);
-	uint16_t vIn = readAdc(VIN_IDX);
-	uint16_t vOut = readAdc(VOUT_IDX);
-	uint16_t iIn = readAdc(I_IN_IDX);
-	uint16_t iOut = readAdc(I_OUT_IDX);
+	uint16_t vInRaw = readAdc(VIN_IDX);
+	uint16_t vOutRaw = readAdc(VOUT_IDX);
+	uint16_t iInRaw = readAdc(I_IN_IDX);
+	uint16_t iOutRaw = readAdc(I_OUT_IDX);
 	uint16_t fan = readAdc(FAN_IN_IDX);
 
 	sensor_channel_get(tempSensor, SENSOR_CHAN_DIE_TEMP, &tempStruct);
@@ -235,15 +243,23 @@ bool initialCheckSequence()
 
 #endif
 
-	LOG_INF("Temp value is: %u\n", temp1);
-	LOG_INF("temp2 value is: %u\n", temp2);
-	LOG_INF("temp mcu value is: %u\n", temp);
-	LOG_INF("TB value is: %u\n", temp);
-	LOG_INF("vin value is: %u\n", vIn);
-	LOG_INF("vout value is: %u\n", vOut);
-	LOG_INF("I in value is: %u\n", iIn);
-	LOG_INF("I out value is: %u\n", iOut);
-	LOG_INF("fan in value is: %u\n", fan);
+	LOG_DBG("Temp value is: %u\n", temp1);
+	LOG_DBG("temp2 value is: %u\n", temp2);
+	LOG_DBG("temp mcu value is: %u\n", temp);
+	LOG_DBG("TB value is: %u\n", temp);
+	LOG_DBG("vin raw value is: %u\n", vInRaw);
+	float vIn = rawVoltageToRealVoltage(VIN_IDX);
+	LOG_INF("vin is %f", vIn);
+	LOG_DBG("vout raw value is: %u\n", vOutRaw);
+	float vOut = rawVoltageToRealVoltage(VOUT_IDX);
+	LOG_INF("vout is %f", vOut);
+	LOG_DBG("I in raw value is: %u\n", iInRaw);
+	float iIn = rawCurrentToRealCurrent(I_IN_IDX);
+	LOG_INF("I in value is: %f", iIn);
+	LOG_DBG("I out raw value is: %u\n", iOutRaw);
+	float iOut = rawCurrentToRealCurrent(I_OUT_IDX);
+	LOG_INF("I out value is: %f", iOut);
+	LOG_DBG("fan in value is: %u\n", fan);
 	if((temp < TB_INIT) && (vIn < VIN_INIT) && ( vOut < VOUT_INIT) && (iIn < I_IN_INIT) && (iOut < I_OUT_INIT))
 	{
 		return true;
@@ -269,8 +285,9 @@ int main(void)
 	bool status;
 	while(1)
 	{
-	 status = initialCheckSequence();
-	k_msleep(3000);
+		// status = initialCheckSequence();
+		ledToggle();
+		k_msleep(1000);
 	}
 #ifdef DEBUG
 status = true;
@@ -345,3 +362,35 @@ status = true;
 	
 	return 0;
 }
+
+
+float rawVoltageToRealVoltage(uint8_t index)
+{
+	/*
+	((Vreal * R203 * 12) / ((R203 + R202) * 27)) + Vref = Vmcu
+	(Vreal * 5640)/(4,062,690) = Vmcu - Vref
+	Vreal = (Vmcu - Vref) * (4062690) / (5640)
+	*/
+	int32_t raw = readAdc(index);
+	float real = (raw - VREF) * 720.335;
+	return real;
+}
+
+float rawCurrentToRealCurrent(uint8_t index)
+{
+	/*
+	((Ireal * 22 * 12) / ( 200 * 27)) + Vref = Vmcu
+	((Ireal * 264) / 5400)) + Vref = Vmcu
+	Ireal = (Vmcu - Vref) * 5400 / 264
+	*/
+	int32_t raw = readAdc(index);
+	float real = (raw - VREF) * 20.4545;
+	return real;
+}
+
+
+float rawTempToRealTemp(uint8_t index)
+{
+
+}
+

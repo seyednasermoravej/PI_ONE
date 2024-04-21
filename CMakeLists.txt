@@ -2,12 +2,12 @@
 
 cmake_minimum_required(VERSION 3.20.0)
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
-project(PL_ONE)
+project(PI_ONE)
 
 
 target_include_directories(app PRIVATE inc)
 # target_sources(app PRIVATE src/main.c)
-target_sources(app PRIVATE src/main.c src/usart.c src/queues.c src/leds.c src/pwms.c src/adcs.c src/opalib_control_pid.c src/rtuClient.c src/rtuServer.c src/hrtim.c src/gpio.c src/can.c src/stm32g4xx_hal_msp.c)
+target_sources(app PRIVATE src/main.c src/usart.c src/queues.c src/leds.c src/pwms.c src/adcs.c src/opalib_control_pid.c src/rtuClient.c src/rtuServer.c src/hrtim.c src/gpio.c src/can.c src/stm32g4xx_hal_msp.c src/counter.c)
 # target_sources(app PRIVATE src/usart.c src/queues.c)
 
 #optimizain disable begin

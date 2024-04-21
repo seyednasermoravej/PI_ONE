@@ -1,8 +1,9 @@
 /{
 	pwmleds {
 		allpwms: allpwms{
-			pwms = < &pwm3 1 PWM_KHZ(100) PWM_POLARITY_NORMAL>, < &pwm3 2 PWM_KHZ(100) PWM_POLARITY_NORMAL>, < &pwm3 3 PWM_KHZ(100) PWM_POLARITY_NORMAL>;
-			// pwms = <&pwm1 1 PWM_KHZ(100) PWM_POLARITY_NORMAL>, < &pwm1 2 PWM_KHZ(100) PWM_POLARITY_NORMAL>, < &pwm3 1 PWM_KHZ(100) PWM_POLARITY_NORMAL>, < &pwm3 2 PWM_KHZ(100) PWM_POLARITY_NORMAL>, < &pwm3 3 PWM_KHZ(100) PWM_POLARITY_NORMAL>;
+			pwms = <&pwm3 1 PWM_KHZ(100) PWM_POLARITY_NORMAL>,
+				   <&pwm3 2 PWM_KHZ(100) PWM_POLARITY_NORMAL>,
+				   <&pwm3 3 PWM_KHZ(100) PWM_POLARITY_NORMAL>;
 
 		};	
 	};
@@ -26,9 +27,10 @@
 		die-temp0 = &die_temp;
 
 	};
-
+	
 	zephyr,user {
-		io-channels = <&adc4 5>, <&adc3 12>, <&adc1 1>, <&adc1 2>, <&adc1 9>, <&adc1 8>, <&adc2 17>, <&adc1 16>;
+		io-channels = <&adc4 5>, <&adc3 12>, <&adc1 1>, <&adc1 2>, <&adc1 9>, <&adc1 8>, <&adc2 17>;
+		// io-channels = <&adc4 5>, <&adc3 12>, <&adc1 1>, <&adc1 2>, <&adc1 9>, <&adc1 8>, <&adc2 17>, <&adc1 16>;
 	};
 	chosen {
 		zephyr,console = &usart2;
@@ -36,9 +38,7 @@
 	};
 };
 
-&green_pwm_led {
-	status = "disabled";
-};
+
 
 // &timers1 {
 // 	st,prescaler = <1>;
@@ -60,6 +60,8 @@
 		pinctrl-0 = < &tim3_ch1_pc6 &tim3_ch2_pa7 &tim3_ch3_pc8>;
 		pinctrl-names = "default";
 	};
+
+	wakeup-source;
 };
 
 
@@ -78,7 +80,7 @@
 		zephyr,reference = "ADC_REF_INTERNAL";	
 		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
 		zephyr,resolution = <12>;
-		zephyr,vref-mv =<2048>;
+		// zephyr,vref-mv =<2048>;
 
 	};
 
@@ -215,5 +217,49 @@
 //hrtim1_scout_pb1 
 &vref {
 	status = "okay";
-	vrefint-cal-mv = <2048>;
+	// vrefint-cal-mv = <2048>;
 };
+
+&clk_hsi {
+	status = "okay";
+};
+
+&clk_hse {
+	status = "disabled";
+};
+
+&pll {
+	clocks = <&clk_hsi>;
+	div-m = <4>;
+	mul-n = <7>;
+	mul-n = <75>;
+	div-p = <2>;
+};
+
+
+
+&arduino_header {
+	gpio-map = <0 0 &gpioa 0 0>,
+			   <1 0 &gpioa 1 0>,
+			   <2 0 &gpioa 4 0>,
+			   <3 0 &gpiob 0 0>,
+			   <4 0 &gpioc 1 0>,
+			   <5 0 &gpioc 0 0>,
+			   <6 0 &gpioc 5 0>,
+			   <7 0 &gpioc 4 0>,
+			   <8 0 &gpioa 10 0>,
+			   <9 0 &gpiob 3 0>,
+			   <10 0 &gpiob 5 0>,
+			   <11 0 &gpiob 4 0>,
+			   <12 0 &gpiob 10 0>,
+			   <13 0 &gpioa 8 0>,
+			   <14 0 &gpioa 9 0>,
+			   <15 0 &gpioc 7 0>,
+			   <16 0 &gpiob 6 0>,
+			   <17 0 &gpioa 7 0>,
+			   <18 0 &gpioa 6 0>,
+			   <19 0 &gpioa 5 0>,
+			   <20 0 &gpiob 9 0>,
+			   <21 0 &gpiob 8 0>;
+};
+/delete-node/ &green_led;

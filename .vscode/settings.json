@@ -15,6 +15,9 @@
 			"gpio.h": "c",
 			"main.h": "c",
 			"hrtim.h": "c",
-			"usart.h": "c"
+			"usart.h": "c",
+			"adc.h": "c",
+			"pwms.h": "c",
+			"counter.h": "c"
 		}
 }

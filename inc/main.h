@@ -42,6 +42,7 @@
 
 #define NUMBERS_OF_SLAVES   3
 
+#define VREF                2048
 void Error_Handler(void);
 
 void HAL_MspInit(void);

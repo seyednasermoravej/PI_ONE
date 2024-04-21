@@ -14,7 +14,7 @@ static const struct adc_dt_spec adc_channels[] = {
 	DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), io_channels,
 			     ADC_DT_SPEC_AND_COMMA)
 };
-LOG_MODULE_REGISTER(adcs, LOG_LEVEL_DBG);
+LOG_MODULE_REGISTER(adcs, LOG_LEVEL_NONE);
 
 int initAdcs()
 {
@@ -36,7 +36,7 @@ int initAdcs()
 }
 
 
-uint16_t readAdc(uint8_t index)
+int32_t readAdc(uint8_t index)
 {
 	uint16_t buf;
 	struct adc_sequence sequence = {
@@ -69,6 +69,6 @@ uint16_t readAdc(uint8_t index)
 		} else {
 			printk(" = %"PRId32" mV\n", val_mv);
 		}
-	return err;
+	return val_mv;
     
 }

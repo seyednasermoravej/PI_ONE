@@ -22,6 +22,6 @@
 
 
 int initAdcs();
-uint16_t readAdc(uint8_t index);
+int32_t readAdc(uint8_t index);
 
 #endif
