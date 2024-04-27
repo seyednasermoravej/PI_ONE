@@ -17,7 +17,6 @@
 			"hrtim.h": "c",
 			"usart.h": "c",
 			"adc.h": "c",
-			"pwms.h": "c",
-			"counter.h": "c"
+			"pwms.h": "c"
 		}
 }

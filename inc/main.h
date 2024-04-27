@@ -32,13 +32,20 @@
 
 // #define CONFIG_SAMPLE_RX_THREAD_PRIORITY    7
 
-#define TB_INIT				80
-#define VIN_INIT			100
-#define VOUT_INIT			100
-#define I_IN_INIT			25
-#define I_OUT_INIT			25
-#define MAX_INPUT_CURRENT	25
-#define MAX_OUTPUT_CURRENT	20
+#define TB_INIT				100
+#define TB_INIT_MIN			0
+#define VIN_INIT			50000//50 V limit
+#define VIN_INIT_MIN		0
+#define VOUT_INIT			50000
+#define VOUT_INIT_MIN       0
+#define I_IN_INIT			2500000 // high value 
+#define I_OUT_INIT			2500000 // high value to no trigger protection 
+
+//#define MAX_INPUT_CURRENT	25
+//#define MAX_OUTPUT_CURRENT 20
+// INIT MEAN LIMITATION FOR BOARD PROTECTION 
+//MAX TEMP - MIN TEMP - MAX VOUT - MIN VOUT - MAX VIN - MIN VIN - MAX IN -  MIN IN 
+//ALL TIME CHECKUP IS TO MAKE SURE WE ARE IN THE INTERVAL DEFINE BY THESES VALUES 
 
 #define NUMBERS_OF_SLAVES   3
 

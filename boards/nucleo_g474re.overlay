@@ -38,7 +38,9 @@
 	};
 };
 
-
+&green_pwm_led {
+	status = "disabled";
+};
 
 // &timers1 {
 // 	st,prescaler = <1>;
@@ -60,8 +62,6 @@
 		pinctrl-0 = < &tim3_ch1_pc6 &tim3_ch2_pa7 &tim3_ch3_pc8>;
 		pinctrl-names = "default";
 	};
-
-	wakeup-source;
 };
 
 
@@ -110,6 +110,8 @@
 		zephyr,resolution = <12>;
 
 	};
+
+
 };
 
 &adc2 {
@@ -237,29 +239,3 @@
 };
 
 
-
-&arduino_header {
-	gpio-map = <0 0 &gpioa 0 0>,
-			   <1 0 &gpioa 1 0>,
-			   <2 0 &gpioa 4 0>,
-			   <3 0 &gpiob 0 0>,
-			   <4 0 &gpioc 1 0>,
-			   <5 0 &gpioc 0 0>,
-			   <6 0 &gpioc 5 0>,
-			   <7 0 &gpioc 4 0>,
-			   <8 0 &gpioa 10 0>,
-			   <9 0 &gpiob 3 0>,
-			   <10 0 &gpiob 5 0>,
-			   <11 0 &gpiob 4 0>,
-			   <12 0 &gpiob 10 0>,
-			   <13 0 &gpioa 8 0>,
-			   <14 0 &gpioa 9 0>,
-			   <15 0 &gpioc 7 0>,
-			   <16 0 &gpiob 6 0>,
-			   <17 0 &gpioa 7 0>,
-			   <18 0 &gpioa 6 0>,
-			   <19 0 &gpioa 5 0>,
-			   <20 0 &gpiob 9 0>,
-			   <21 0 &gpiob 8 0>;
-};
-/delete-node/ &green_led;
