@@ -35,6 +35,8 @@ extern "C" {
 extern HRTIM_HandleTypeDef hhrtim1;
 
 /* USER CODE BEGIN Private defines */
+#define MICRO_CLK_170
+#ifdef MICRO_CLK_150
 /*
   The duration of pwm is equal to (TIMA_PERIOD / (150000000 * 32)).
   So, for the given value, duration = 48000/(150000000 * 32) = 10 us
@@ -45,6 +47,22 @@ extern HRTIM_HandleTypeDef hhrtim1;
   For the given value, dead time = 240/(150000000 * 8) = 200 ns.
 */
 #define	DEAD_TIME 240	//
+#elif defined MICRO_CLK_170
+
+/*
+  The duration of pwm is equal to (TIMA_PERIOD / (170000000 * 32)).
+  So, for the given value, duration = 54400/(170000000 * 32) = 10 us
+*/
+#define TIMA_PERIOD 54400 
+/*
+  The dead time between each channel is equal to (DEAD_TIME / (170000000 * 8)).
+  For the given value, dead time = 272/(170000000 * 8) = 200 ns.
+*/
+
+#define	DEAD_TIME 272	//
+#else
+#error "One of MICRO_CLK_150 or MICRO_CLK_170 must be defined"
+#endif
 /* USER CODE END Private defines */
 
 void MX_HRTIM1_Init(void);
