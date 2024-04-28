@@ -14,7 +14,7 @@ static const struct adc_dt_spec adc_channels[] = {
 	DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), io_channels,
 			     ADC_DT_SPEC_AND_COMMA)
 };
-LOG_MODULE_REGISTER(adcs, LOG_LEVEL_NONE);
+LOG_MODULE_REGISTER(adcs, LOG_LEVEL_DBG);
 
 int initAdcs()
 {
