@@ -61,7 +61,6 @@ void initBoard()
 	//Alk : What is the purpose of initPwms(0.5) here ?
 	HAL_MspInit();
 
-	usartInit();
 	// initCan();
 // #ifdef MASTER
 // 	rtuClientInit();

@@ -21,7 +21,7 @@ static int usartInit(const struct device *const usart, void * cb)
 
 static void cbLcd(const struct device *dev, void *user_data)
 {
-	uint8_t c;
+	uint8_t c[2];
 	static uint8_t rx_buf_pos = 0;
 	static char rx_buf[MSG_SIZE];
 	if ((!uart_irq_update(lcdusart)) || (!uart_irq_rx_ready(lcdusart))) {
@@ -29,7 +29,8 @@ static void cbLcd(const struct device *dev, void *user_data)
 	}
 
 	/* read until FIFO empty */
-	while (uart_fifo_read(lcdusart, &c, 1) == 1) {
+	while (uart_fifo_read(lcdusart, c, 2) == 1) {
+		// c = c - 128;
 		if ((c == '\n' || c == '\r') && rx_buf_pos > 0) {
 			/* terminate string */
 			rx_buf[rx_buf_pos] = '\0';
@@ -65,4 +66,4 @@ void lcdTask()
 }
 
 
-// K_THREAD_DEFINE(lcdusartThread, USART_DEVICE_STACK_SIZE, deviceTask, NULL, NULL, NULL, USART_DEVICE_PRIORITY, 0, 0);
+K_THREAD_DEFINE(lcdusartThread, USART_DEVICE_STACK_SIZE, lcdTask, NULL, NULL, NULL, USART_DEVICE_PRIORITY, 0, 0);
