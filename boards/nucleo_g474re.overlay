@@ -236,8 +236,8 @@
 &pll {
 	clocks = <&clk_hsi>;
 	div-m = <4>;
-	mul-n = <7>;
-	mul-n = <75>;
+	mul-n = <85>;
+	div-q = <2>;
 	div-p = <2>;
 };
 
