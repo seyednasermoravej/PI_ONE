@@ -222,10 +222,6 @@ bool initialCheckSequence()
 	//int32_t temp;
 
 	//sensor_sample_fetch(tempSensor);
-	uint16_t vInRaw = readAdc(VIN_IDX);
-	uint16_t vOutRaw = readAdc(VOUT_IDX);
-	uint16_t iInRaw = readAdc(I_IN_IDX);
-	uint16_t iOutRaw = readAdc(I_OUT_IDX);
 
 	//sensor_channel_get(tempSensor, SENSOR_CHAN_DIE_TEMP, &tempStruct);
 
@@ -233,22 +229,21 @@ bool initialCheckSequence()
 	//temp = tempStruct.val1;
 
 #endif
-	float temp1 = rawTempToRealTemp(TEMP_IDX);
+	float temp1 = realTemp(TEMP_IDX);
 	LOG_INF("Temp value is: %f\n", temp1);
-	float temp2 = rawTempToRealTemp(TEMP2_IDX);
+	float temp2 = realTemp(TEMP2_IDX);
 	LOG_INF("Temp2 value is: %f\n", temp2);
 	//LOG_DBG("temp mcu value is: %u\n", temp);
 	//LOG_DBG("TB value is: %u\n", temp);
-	float vIn = rawVoltageToRealVoltage(VIN_IDX);
+	float vIn = realVoltage(VIN_IDX);
 	LOG_INF("vin is %f", vIn);
-	float vOut = rawVoltageToRealVoltageN(VOUT_IDX);
+	float vOut = realVoltageN(VOUT_IDX);
 	LOG_INF("vout is %f", vOut);
-	float iIn = rawCurrentToRealCurrent(I_IN_IDX);
+	float iIn = realCurrent(I_IN_IDX);
 	LOG_INF("I in value is: %f", iIn);
-	float iOut = rawCurrentToRealCurrent(I_OUT_IDX);
+	float iOut = realCurrent(I_OUT_IDX);
 	LOG_INF("I out value is: %f", iOut);
-	fan = readAdc(FAN_IN_IDX);
-	LOG_INF("Fan value is: %u.", fan);
+
 
 	if((temp1 < TB_INIT) && (vIn < VIN_INIT) && ( vOut < VOUT_INIT) && (iIn < I_IN_INIT) && (iOut < I_OUT_INIT))
 	{
@@ -362,87 +357,8 @@ status = true;
 }
 
 
-float rawVoltageToRealVoltage(uint8_t index)
-{
-	/*
-	((Vreal * R203 * 12) / ((R203 + R202) * 27)) + Vref = Vmcu
-	(Vreal * 5640)/(4,062,690) = Vmcu - Vref
-	Vreal = (Vmcu - Vref) * (4062690) / (5640)
-	*/
-// divider gain : 0.00312354
-//Iso gain : 7.5
-//AOP Vref + vin*0.44
- 
- //RV =  ( AV - Vref )* 97.015
-
-	int32_t raw = readAdc(index);
-	//float real = (raw - VREF) * 97.015;
-	float real = (raw - 2600) * 76.92;
-
-	return real;
-}
-
-float rawVoltageToRealVoltageN(uint8_t index)
-{
-	/*
-	((Vreal * R203 * 12) / ((R203 + R202) * 27)) + Vref = Vmcu
-	(Vreal * 5640)/(4,062,690) = Vmcu - Vref
-	Vreal = (Vmcu - Vref) * (4062690) / (5640)
-	*/
-// divider gain : 0.00312354
-//Iso gain : 7.5
-//AOP Vref + vin*0.44
- 
- //RV =  ( AV - Vref )* 97.015
-
-	int32_t raw = readAdc(index);
-	float real = (raw - 2) * 71.43;
-	//float real = (raw - VREF) * 97.015;
-	
-	return real;
-}
 
 
-
-float rawCurrentToRealCurrent(uint8_t index)
-{
-	/*
-	((Ireal * 22 * 12) / ( 200 * 27)) + Vref = Vmcu
-	((Ireal * 264) / 5400)) + Vref = Vmcu
-	Ireal = (Vmcu - Vref) * 5400 / 264
-	*/
-	int32_t raw = readAdc(index);
-	float real = (raw - VREF) * 20.4545;
-	return real;
-}
-
-
-float rawTempToRealTemp(uint8_t index)
-{
-	float R , T ;
-	float T0 = (273 + 25);
-	float R0 = 10000;
-	float B = 3450;
-	int32_t raw = readAdc(index);
-	R = ( (raw*20000)/(3300 - raw) ); 
-	T =  B/( log(R) - log(R0) + (B/T0));
-	return (T - 273);
-	
-	//T =  ( ln(R) - ln(Ro) + B*(1/To) ) / B
-
-	// (3300)*R/(20000+R) = raw voltages are in mili volt, resistors are in ohm.
-	// 3300*R = (20000*raw)+(R*raw)
-	//(3300 - raw)*R = 20000 * raw
-	//R = (20000 * raw)/(3300 - raw)
-
-
-	//R = R0 * exp(B * (1/T) - (1/T0))
-	//T0 = 273 + 25, R0 = 10000, B = 3450
-	//logR = logR0 + B/T - B/T0 
-	//logR - logR0 + B/T0 = B/T
-	//T = B/(logR - logR0 + B/T0)
-	
-}
 
 int closedLoop(PIController* PI, float ovRef)
 {

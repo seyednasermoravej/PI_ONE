@@ -22,6 +22,10 @@
 
 
 int initAdcs();
-int32_t readAdc(uint8_t index);
 
+float realTemp(uint8_t index);
+float realCurrent(uint8_t index);
+float realVoltage(uint8_t index);
+float realVoltageN(uint8_t index);
+float fanSpeed();
 #endif
