@@ -32,6 +32,8 @@
 
 // #define CONFIG_SAMPLE_RX_THREAD_PRIORITY    7
 
+
+// shall change TB_INIT to TB_INIT_MAX?
 #define TB_INIT				100
 #define TB_INIT_MIN			0
 #define VIN_INIT			50000//50 V limit
@@ -49,7 +51,7 @@
 
 #define NUMBERS_OF_SLAVES   3
 
-#define VREF                2048
+#define VREF                2500
 void Error_Handler(void);
 
 void HAL_MspInit(void);

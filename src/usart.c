@@ -21,7 +21,7 @@ static int usartInit(const struct device *const usart, void * cb)
 
 static void cbLcd(const struct device *dev, void *user_data)
 {
-	uint8_t c[2];
+	uint8_t c;
 	static uint8_t rx_buf_pos = 0;
 	static char rx_buf[MSG_SIZE];
 	if ((!uart_irq_update(lcdusart)) || (!uart_irq_rx_ready(lcdusart))) {
@@ -29,14 +29,15 @@ static void cbLcd(const struct device *dev, void *user_data)
 	}
 
 	/* read until FIFO empty */
-	while (uart_fifo_read(lcdusart, c, 2) == 1) {
+	while (uart_fifo_read(lcdusart, &c, 1) == 1) {
 		// c = c - 128;
 		if ((c == '\n' || c == '\r') && rx_buf_pos > 0) {
 			/* terminate string */
 			rx_buf[rx_buf_pos] = '\0';
 
 			/* if queue is full, message is silently dropped */
-			k_msgq_put(&lcdMsg, &rx_buf, K_NO_WAIT);
+			uint16_t value = atoi(rx_buf);
+			k_msgq_put(&lcdMsg, &value, K_NO_WAIT);
 
 			/* reset the buffer (it was copied to the msgq) */
 			rx_buf_pos = 0;

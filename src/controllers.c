@@ -8,7 +8,6 @@
 #include "controllers.h"					                                    // Corresponding header file
 #include <math.h>							                                    // Standard math library
 
-#include "Core/core.h"
 
 
 /*
@@ -77,8 +76,8 @@ float RunPIController(PIController* me, float error)
 
 
 	// Reset the integral when the outputs are inhibited (when the converter is blocked):
-	if(GetCoreState() != OPERATING)
-		me->ui_prev = 0.0;					                                    // Avoid integrating when core has been disabled
+	//if(GetCoreState() != OPERATING)
+	//	me->ui_prev = 0.0;					                                    // Avoid integrating when core has been disabled
 
 	return u;
 }

@@ -20,7 +20,7 @@
 #include "queues.h"
 #include "controllers.h"
 #include "math.h"
-
+#include "closedLoop.h"
 
 
 
@@ -37,7 +37,13 @@ static const struct gpio_dt_spec busytft =
 void Error_Handler(){}
 float rawCurrentToRealCurrent(uint8_t index);
 float rawVoltageToRealVoltage(uint8_t index);
+float rawVoltageToRealVoltageN(uint8_t index);
 float rawTempToRealTemp(uint8_t index);
+
+
+
+PIController PI_voltage;
+
 
 void initBusyTft()
 {
@@ -57,10 +63,10 @@ void initBoard()
 	initBusyTft();
 
 	initAdcs();
-	//initPwms(0.5);
+	
 	//Alk : What is the purpose of initPwms(0.5) here ?
 	HAL_MspInit();
-
+	initPwms(0);
 	// initCan();
 // #ifdef MASTER
 // 	rtuClientInit();
@@ -89,22 +95,7 @@ void COVMode()
 	//receiving paramters from master.
 	LOG_INF("Receiving paramters from master");
 #endif
-	// LOG_INF("Please enter voltage value to regulate in converter output.\n");
-	// #ifdef DEBUG
-	// scanf("%d", ovRegulate);
-	// #endif
-	// LOG_INF("Please enter the minimum and maximum output voltage values for battery protection.\n");
-	// #ifdef DEBUG
-	// scanf("%d %d", ovMinBattery, ovMaxBattery);
-	// #endif
-	// LOG_INF("Please enter the minimum and maximum input voltage values for battery protection.\n");
-	// #ifdef DEBUG
-	// scanf("%d %d", inMinBattery, inMaxBattery);
-	// #endif
-	// LOG_INF("Please enter max charge and discharge battery current.\n");
-	// #ifdef DEBUG
-	// scanf("%d %d", maxChargeBatteryCurrent, maxDischargeBatteryCurrent);
-	// #endif
+
 }
 
 bool getSlaveStatus(uint8_t index)
@@ -188,7 +179,7 @@ void manualMode()
 	LOG_INF("Please enter 1 for Unidirectional mode and 2 for Bidirectional mode.\n");
 #ifdef DEBUG
 	int mode = 0;
-	lcdMsg()("%d", &mode);
+	while(k_msgq_get(&lcdMsg, &mode, K_FOREVER));
 #else
 
 	float mode = 0;
@@ -212,19 +203,20 @@ void manualMode()
 }
 bool initialCheckSequence()
 {
+	uint16_t fan;
 #ifdef DEBUG
 	printf("What are the values of the following? enter with a sapce between them:\n");
 	printf("Now these values are given by the tester user to check the logic of the program.\n");
 	printf("In real application these values will be read by the ADC.\n");
 	printf("temp temp2 temp_mcu vin vout iIn iOut.\n");
-	uint16_t temp, temp2, tempMcu, vIn, vOut, iIn, iOut;
-	while(k_msgq_get(&lcdMsg, &temp, K_FOREVER));
-	while(k_msgq_get(&lcdMsg, &temp2, K_FOREVER));
-	while(k_msgq_get(&lcdMsg, &tempMcu, K_FOREVER));
-	while(k_msgq_get(&lcdMsg, &vIn, K_FOREVER));
-	while(k_msgq_get(&lcdMsg, &vOut, K_FOREVER));
-	while(k_msgq_get(&lcdMsg, &iIn, K_FOREVER));
-	while(k_msgq_get(&lcdMsg, &iOut, K_FOREVER));
+	uint16_t tempSet, temp2Set, tempMcuSet, vInSet, vOutSet, iInSet, iOutSet;
+	while(k_msgq_get(&lcdMsg, &tempSet, K_FOREVER));
+	while(k_msgq_get(&lcdMsg, &temp2Set, K_FOREVER));
+	while(k_msgq_get(&lcdMsg, &tempMcuSet, K_FOREVER));
+	while(k_msgq_get(&lcdMsg, &vInSet, K_FOREVER));
+	while(k_msgq_get(&lcdMsg, &vOutSet, K_FOREVER));
+	while(k_msgq_get(&lcdMsg, &iInSet, K_FOREVER));
+	while(k_msgq_get(&lcdMsg, &iOutSet, K_FOREVER));
 #elif defined RELEASE
 	//struct sensor_value tempStruct;
 	//int32_t temp;
@@ -234,7 +226,6 @@ bool initialCheckSequence()
 	uint16_t vOutRaw = readAdc(VOUT_IDX);
 	uint16_t iInRaw = readAdc(I_IN_IDX);
 	uint16_t iOutRaw = readAdc(I_OUT_IDX);
-	uint16_t fan = readAdc(FAN_IN_IDX);
 
 	//sensor_channel_get(tempSensor, SENSOR_CHAN_DIE_TEMP, &tempStruct);
 
@@ -242,25 +233,23 @@ bool initialCheckSequence()
 	//temp = tempStruct.val1;
 
 #endif
-	float temp1=rawTempToRealTemp(TEMP_IDX);
-	LOG_DBG("Temp value is: %u\n", temp1);
-	float temp2=rawTempToRealTemp(TEMP2_IDX);
-	LOG_DBG("temp2 value is: %u\n", temp2);
+	float temp1 = rawTempToRealTemp(TEMP_IDX);
+	LOG_INF("Temp value is: %f\n", temp1);
+	float temp2 = rawTempToRealTemp(TEMP2_IDX);
+	LOG_INF("Temp2 value is: %f\n", temp2);
 	//LOG_DBG("temp mcu value is: %u\n", temp);
 	//LOG_DBG("TB value is: %u\n", temp);
-	LOG_DBG("vin raw value is: %u\n", vInRaw);
 	float vIn = rawVoltageToRealVoltage(VIN_IDX);
 	LOG_INF("vin is %f", vIn);
-	LOG_DBG("vout raw value is: %u\n", vOutRaw);
-	float vOut = rawVoltageToRealVoltage(VOUT_IDX);
+	float vOut = rawVoltageToRealVoltageN(VOUT_IDX);
 	LOG_INF("vout is %f", vOut);
-	LOG_DBG("I in raw value is: %u\n", iInRaw);
 	float iIn = rawCurrentToRealCurrent(I_IN_IDX);
 	LOG_INF("I in value is: %f", iIn);
-	LOG_DBG("I out raw value is: %u\n", iOutRaw);
 	float iOut = rawCurrentToRealCurrent(I_OUT_IDX);
 	LOG_INF("I out value is: %f", iOut);
-	LOG_DBG("fan in value is: %u\n", fan);
+	fan = readAdc(FAN_IN_IDX);
+	LOG_INF("Fan value is: %u.", fan);
+
 	if((temp1 < TB_INIT) && (vIn < VIN_INIT) && ( vOut < VOUT_INIT) && (iIn < I_IN_INIT) && (iOut < I_OUT_INIT))
 	{
 		return true;
@@ -285,12 +274,13 @@ int main(void)
 	//pwmSet(HRTIM_IDX, 100000, 0.3);
 	//turnOffAllPWMs();
 	bool status;
-	while(1)
-	{
-		status = initialCheckSequence();
-		ledToggle();
-		k_msleep(1000);
-	}
+	status = initialCheckSequence();
+	ledToggle();
+	pwmSet(HRTIM_IDX, 100000, 0.4);
+	//ConfigPIController(&PI_voltage,Kp_i,Ti_i,Up_limit_i,Low_limit_i,F_samp);
+	//Ki=Kp/Ti
+	ConfigPIController(&PI_voltage,0.17,(0.0017/5),0.7,0.2,170000000);
+
 #ifdef DEBUG
 status = true;
 #endif
@@ -307,7 +297,7 @@ status = true;
 		return 1;
 	}
 	int busytft = 0;
-#if DEBUG
+#ifdef DEBUG
 	printf("Set the busyness of the LCD, 1 when the lcd is busy and 0 if the lcd is free.\n");
 	while(k_msgq_get(&lcdMsg, &busytft, K_FOREVER));
 	while (status && busytft)
@@ -317,27 +307,27 @@ status = true;
 	}
 	
 #else
-	while((status) && (gpio_pin_get_dt(&busytft)));
+	//while((status) && (gpio_pin_get_dt(&busytft)));
 #endif
 	LOG_INF("The LCD is ready to accept commands.\n");
 	LOG_INF("1 for automatic mode and 2 for the manual mode.\n");
-	int userSelection = tftAccess();
-	while(!((userSelection == 1) || (userSelection == 2)))
-	{
-		LOG_INF("incorrect choice.\n");
-		LOG_INF("1 for automatic mode and 2 for the manual mode.\n");
-		userSelection = tftAccess();
-	}
-	if(userSelection == 1)
-	{
-		automaticMode();
-	}
-	else
-	{
-		manualMode();
-	}
+	//int userSelection = tftAccess();
+	//while(!((userSelection == 1) || (userSelection == 2)))
+	//{
+	//	LOG_INF("incorrect choice.\n");
+	//	LOG_INF("1 for automatic mode and 2 for the manual mode.\n");
+	//	userSelection = tftAccess();
+	//}
+	//if(userSelection == 1)
+	//{
+	//	automaticMode();
+	//}
+	//else
+	//{
+	//	manualMode();
+	//}
 
-	bool otherStatuses = true;
+	//bool otherStatuses = true;
 	while(1)
 	{
 		status = initialCheckSequence();
@@ -346,22 +336,28 @@ status = true;
 //check status of the whole system.
 //if all statuses are ok conitunes
 //else send command to all the devices to stop
-		for(uint8_t i = 0; i < NUMBERS_OF_SLAVES; i++)
-		{
+		//for(uint8_t i = 0; i < NUMBERS_OF_SLAVES; i++)
+		//{
 			// otherStatuses &&= getSlaveStatus(i);
-		}
+		//}
 #else
 		//send status to the master
 		// receive others status from master
 #endif
-		if((!status) && (!otherStatuses))
-		{
-			turnOffAllPWMs();
-			pwmSet(DATA_LED_IDX, RED_FREQUENCY, 0.5);
-		}	
+		//if((!status) && (!otherStatuses))
+		//{
+		//	turnOffAllPWMs();
+		//	pwmSet(DATA_LED_IDX, RED_FREQUENCY, 0.5);
+		//}	
+
+		//closedLoop(&PI_voltage, 12000);
 	}	
 
 	
+
+
+
+
 	return 0;
 }
 
@@ -380,9 +376,33 @@ float rawVoltageToRealVoltage(uint8_t index)
  //RV =  ( AV - Vref )* 97.015
 
 	int32_t raw = readAdc(index);
-	float real = (raw - VREF) * 97.015;
+	//float real = (raw - VREF) * 97.015;
+	float real = (raw - 2600) * 76.92;
+
 	return real;
 }
+
+float rawVoltageToRealVoltageN(uint8_t index)
+{
+	/*
+	((Vreal * R203 * 12) / ((R203 + R202) * 27)) + Vref = Vmcu
+	(Vreal * 5640)/(4,062,690) = Vmcu - Vref
+	Vreal = (Vmcu - Vref) * (4062690) / (5640)
+	*/
+// divider gain : 0.00312354
+//Iso gain : 7.5
+//AOP Vref + vin*0.44
+ 
+ //RV =  ( AV - Vref )* 97.015
+
+	int32_t raw = readAdc(index);
+	float real = (raw - 2) * 71.43;
+	//float real = (raw - VREF) * 97.015;
+	
+	return real;
+}
+
+
 
 float rawCurrentToRealCurrent(uint8_t index)
 {
@@ -400,24 +420,42 @@ float rawCurrentToRealCurrent(uint8_t index)
 float rawTempToRealTemp(uint8_t index)
 {
 	float R , T ;
+	float T0 = (273 + 25);
+	float R0 = 10000;
+	float B = 3450;
 	int32_t raw = readAdc(index);
-	R = (raw*10000)/(3300 - raw);
-	T =  ( log(R) - log(10000) + (3450*(1/(25+273))) ) / 3450;
+	R = ( (raw*20000)/(3300 - raw) ); 
+	T =  B/( log(R) - log(R0) + (B/T0));
 	return (T - 273);
 	
 	//T =  ( ln(R) - ln(Ro) + B*(1/To) ) / B
 
-	// (3300)*R/(20000+R) = raw voltages are in mili volt, resistors are in Kohm.
+	// (3300)*R/(20000+R) = raw voltages are in mili volt, resistors are in ohm.
 	// 3300*R = (20000*raw)+(R*raw)
-	//(3300 - raw)*R = 20 * raw
-	//R = (20 * raw)/(3300 - raw)
+	//(3300 - raw)*R = 20000 * raw
+	//R = (20000 * raw)/(3300 - raw)
 
 
 	//R = R0 * exp(B * (1/T) - (1/T0))
 	//T0 = 273 + 25, R0 = 10000, B = 3450
 	//logR = logR0 + B/T - B/T0 
 	//logR - logR0 + B/T0 = B/T
-	//T = B/(logR - logR0 + T0)
+	//T = B/(logR - logR0 + B/T0)
 	
 }
 
+int closedLoop(PIController* PI, float ovRef)
+{
+			//Close loop : 
+	//1 -  Set output voltage 
+    
+	//2 - Measure output voltage 
+    float ovMeasure = rawVoltageToRealVoltage(VOUT_IDX);
+	// 3 - Calculte Error = Set - Meas 
+    float dutyCycle = RunPIController(PI, ovRef - ovMeasure);
+	//4 - DutyCycle = RunPIController(&PI_tension,Vout_ref-Vout_mes);
+	//5 - initpwm() -- Just HRTIM_CHA1
+	if (dutyCycle == 1)
+		dutyCycle = 0.9;
+    pwmSet(HRTIM_IDX, 100000, dutyCycle);
+}

@@ -39,6 +39,7 @@ void initPwms(float dutycycle)
             Error_Handler();
     }
     HAL_HRTIM_WaveformOutputStart(&hhrtim1, HRTIM_OUTPUT_TA1 + HRTIM_OUTPUT_TA2);
+    //HAL_HRTIM_WaveformOutputStart(&hhrtim1, HRTIM_OUTPUT_TA1);
     HAL_HRTIM_WaveformCounterStart(&hhrtim1, HRTIM_TIMERID_TIMER_A);
 	LOG_INF("PWM initialization finished.\n");
     // turnOffAllPWMs();
