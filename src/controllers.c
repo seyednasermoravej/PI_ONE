@@ -90,7 +90,7 @@ int closedLoop(PIController* PI, float ovRef)
 	//1 -  Set output voltage 
     
 	//2 - Measure output voltage 
-    float ovMeasure = rawVoltageToRealVoltage(VOUT_IDX);
+    float ovMeasure = realVoltage(VOUT_IDX);
 	// 3 - Calculte Error = Set - Meas 
     float dutyCycle = RunPIController(PI, ovRef - ovMeasure);
 	//4 - DutyCycle = RunPIController(&PI_tension,Vout_ref-Vout_mes);

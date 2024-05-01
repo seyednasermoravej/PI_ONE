@@ -4,6 +4,8 @@
 #include "../inc/pwms.h"
 #include "hrtim.h"
 HRTIM_CompareCfgTypeDef pCompareCfgMy = {0};
+HRTIM_TimeBaseCfgTypeDef pTimeBaseCfgMy = {0};
+
 #if !DT_NODE_EXISTS(DT_PATH(pwmleds, allpwms)) || \
 	!DT_NODE_HAS_PROP(DT_PATH(pwmleds, allpwms), pwms)
 #error "No suitable devicetree overlay specified"
@@ -20,7 +22,7 @@ static const struct pwm_dt_spec pwm_channels[] = {
 LOG_MODULE_REGISTER(pwms, LOG_LEVEL_DBG);
 
 
-void initPwms(float dutycycle)
+void initPwms()
 {
 	/* Configure channels individually prior to sampling. */
 	for (size_t i = 0; i < ARRAY_SIZE(pwm_channels); i++) {
@@ -33,7 +35,8 @@ void initPwms(float dutycycle)
 
 	MX_HRTIM1_Init();
 
-    pCompareCfgMy.CompareValue = TIMA_PERIOD * dutycycle;
+    pCompareCfgMy.CompareValue = 0;
+    // pCompareCfgMy.CompareValue = TIMA_PERIOD * dutycycle;
     if (HAL_HRTIM_WaveformCompareConfig(&hhrtim1, HRTIM_TIMERINDEX_TIMER_A, HRTIM_COMPAREUNIT_1, &pCompareCfgMy) != HAL_OK)
     {
             Error_Handler();
@@ -49,7 +52,16 @@ void pwmSet(uint8_t idx, uint32_t frequency, float dutycycle)
 {
     if(idx == HRTIM_IDX)
     {
-        pCompareCfgMy.CompareValue = TIMA_PERIOD * dutycycle;
+        uint32_t periodCoeff = (170000000 / frequency) * 32;
+        pTimeBaseCfgMy.Period = periodCoeff;
+        pTimeBaseCfgMy.RepetitionCounter = 0x00;
+        pTimeBaseCfgMy.PrescalerRatio = HRTIM_PRESCALERRATIO_MUL32;
+        pTimeBaseCfgMy.Mode = HRTIM_MODE_CONTINUOUS;
+        if (HAL_HRTIM_TimeBaseConfig(&hhrtim1, HRTIM_TIMERINDEX_TIMER_A, &pTimeBaseCfgMy) != HAL_OK)
+        {
+            Error_Handler();
+        }
+        pCompareCfgMy.CompareValue = periodCoeff * dutycycle;
         if (HAL_HRTIM_WaveformCompareConfig(&hhrtim1, HRTIM_TIMERINDEX_TIMER_A, HRTIM_COMPAREUNIT_1, &pCompareCfgMy) != HAL_OK)
         {
                 Error_Handler();

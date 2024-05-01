@@ -12,7 +12,6 @@
  */
 
 
-int closedLoop(PIController* PI, float ovRef);
 
 typedef struct{
 	float kp,ti;				// Gain and time constant of PI
@@ -26,6 +25,7 @@ typedef struct{
 } PIController;
 
 
+int closedLoop(PIController* PI, float ovRef);
 
 /**
  * Routine to configure the PI controller 'me' and pre-compute the necessary constants.

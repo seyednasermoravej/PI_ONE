@@ -17,7 +17,7 @@
 #define HRTIM_IDX                   10
 
 #define MAX_PERIOD 10000
-void initPwms(float dutycycle);
+void initPwms();
 void pwmSet(uint8_t idx, uint32_t frequency, float dutycycle);
 void turnOffAllPWMs();
 #endif
