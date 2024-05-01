@@ -2,7 +2,8 @@
 #define CONTROLLERS_H_
 
 #include <stdint.h>
-
+#include "adcs.h"
+#include "pwms.h"
 
 /**
  * Library written by ALEK GUEDEGBE for Workflow PSIM to IMPERIX
@@ -10,6 +11,8 @@
  * Definition and operation according to the Workflow PSIM to IMPERIX
  */
 
+
+int closedLoop(PIController* PI, float ovRef);
 
 typedef struct{
 	float kp,ti;				// Gain and time constant of PI

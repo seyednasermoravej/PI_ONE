@@ -35,12 +35,6 @@ static const struct gpio_dt_spec busytft =
 
 
 void Error_Handler(){}
-float rawCurrentToRealCurrent(uint8_t index);
-float rawVoltageToRealVoltage(uint8_t index);
-float rawVoltageToRealVoltageN(uint8_t index);
-float rawTempToRealTemp(uint8_t index);
-
-
 
 PIController PI_voltage;
 
@@ -345,33 +339,7 @@ status = true;
 		//	pwmSet(DATA_LED_IDX, RED_FREQUENCY, 0.5);
 		//}	
 
-		//closedLoop(&PI_voltage, 12000);
+		closedLoop(&PI_voltage, 12000);
 	}	
-
-	
-
-
-
-
 	return 0;
-}
-
-
-
-
-
-int closedLoop(PIController* PI, float ovRef)
-{
-			//Close loop : 
-	//1 -  Set output voltage 
-    
-	//2 - Measure output voltage 
-    float ovMeasure = rawVoltageToRealVoltage(VOUT_IDX);
-	// 3 - Calculte Error = Set - Meas 
-    float dutyCycle = RunPIController(PI, ovRef - ovMeasure);
-	//4 - DutyCycle = RunPIController(&PI_tension,Vout_ref-Vout_mes);
-	//5 - initpwm() -- Just HRTIM_CHA1
-	if (dutyCycle == 1)
-		dutyCycle = 0.9;
-    pwmSet(HRTIM_IDX, 100000, dutyCycle);
 }

@@ -81,3 +81,21 @@ float RunPIController(PIController* me, float error)
 
 	return u;
 }
+
+
+
+int closedLoop(PIController* PI, float ovRef)
+{
+			//Close loop : 
+	//1 -  Set output voltage 
+    
+	//2 - Measure output voltage 
+    float ovMeasure = rawVoltageToRealVoltage(VOUT_IDX);
+	// 3 - Calculte Error = Set - Meas 
+    float dutyCycle = RunPIController(PI, ovRef - ovMeasure);
+	//4 - DutyCycle = RunPIController(&PI_tension,Vout_ref-Vout_mes);
+	//5 - initpwm() -- Just HRTIM_CHA1
+	if (dutyCycle == 1)
+		dutyCycle = 0.9;
+    pwmSet(HRTIM_IDX, 100000, dutyCycle);
+}
