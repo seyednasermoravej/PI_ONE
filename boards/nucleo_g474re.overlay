@@ -237,16 +237,16 @@
 };
 
 &clk_hsi {
-	status = "okay";
-};
-
-&clk_hse {
 	status = "disabled";
 };
 
+&clk_hse {
+	status = "okay";
+};
+
 &pll {
-	clocks = <&clk_hsi>;
-	div-m = <4>;
+	clocks = <&clk_hse>;
+	div-m = <6>;
 	mul-n = <85>;
 	div-q = <2>;
 	div-p = <2>;
