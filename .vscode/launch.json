@@ -2,37 +2,14 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "LaunchF",
+            "name": "Launch",
             "cwd": "${workspaceFolder}",
             "executable": "build/zephyr/zephyr.elf",
             "request": "launch",
             "type": "cortex-debug",
             "runToEntryPoint": "main",
             "servertype": "openocd",
-            "interface": "swd",
-            "configFiles": [ "interface\\stlink.cfg", "target\\stm32f4x.cfg"],
-            "gdbPath": "${userHome}/zephyr-sdk-0.16.5/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb",
-            "preLaunchTask": "buildFlash",
-            "showDevDebugOutput": "raw",
-            "rtos": "Zephyr",
-            "overrideLaunchCommands": [
-                "interpreter-exec console \"monitor reset halt\"",
-                //'target-download',
-                //'interpreter-exec console \"monitor reset halt\"',
-                "-enable-pretty-printing"
-            ],
-            // "breakAfterReset": true
-
-        },
-        {
-            "name": "LaunchG",
-            "cwd": "${workspaceFolder}",
-            "executable": "build/zephyr/zephyr.elf",
-            "request": "launch",
-            "type": "cortex-debug",
-            "runToEntryPoint": "main",
-            "servertype": "openocd",
-            "gdbPath": "${userHome}/zephyr-sdk-0.16.5/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb",
+            "gdbPath": "${userHome}/zephyr-sdk-0.16.8/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb",
             "preLaunchTask": "buildFlash",
             "interface": "swd",
             "configFiles": [ "interface\\stlink.cfg", "target\\stm32g4x.cfg"],
@@ -40,47 +17,5 @@
             "rtos": "Zephyr",
             // "breakAfterReset": true
         },
-        {
-            "name": "Attach",
-            "device": "STM32F407VG",
-            // "device": "nRF52840_xxAA",
-            "cwd": "${workspaceFolder}",
-            "executable": "build/zephyr/zephyr.elf",
-            "request": "attach",
-            "type": "cortex-debug",
-            "runToEntryPoint": "main",
-            // "servertype": "stlink",
-
-            "servertype": "openocd",
-            // "servertype": "jlink",
-            "configFiles": [ "/board/stm32f4discovery.cfg"],
-            "gdbPath": "${userHome}/zephyr-sdk-0.16.5/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb"
-        },
-        {
-            "name": "C/C++: g++.exe build and debug active file",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
-            "args": [],
-            "stopAtEntry": false,
-            "cwd": "${fileDirname}",
-            "environment": [],
-            "externalConsole": false,
-            "MIMode": "gdb",
-            "miDebuggerPath": "C:\\msys64\\mingw64\\bin\\gdb.exe",
-            "setupCommands": [
-                {
-                "description": "Enable pretty-printing for gdb",
-                "text": "-enable-pretty-printing",
-                "ignoreFailures": true
-                },
-                {
-                "description": "Set Disassembly Flavor to Intel",
-                "text": "-gdb-set disassembly-flavor intel",
-                "ignoreFailures": true
-                }
-            ],
-            "preLaunchTask": "C/C++: g++.exe build active file"
-        }
     ]
 }
