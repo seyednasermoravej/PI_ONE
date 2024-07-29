@@ -33,11 +33,24 @@ int initLeds()
 
 int ledToggle()
 {
-	int ret = 0;
-	ret = gpio_pin_toggle_dt(&led);
-	if (ret < 0) {
-		return 0;
-	}
-	LOG_INF("Led toggled.\n");
-	return 0;
+	// int ret = 0;
+	// ret = gpio_pin_toggle_dt(&led);
+	// if (ret < 0) {
+	// 	return 0;
+	// }
+	// LOG_INF("Led toggled.\n");
+	// return 0;
+
+
+	 gpio_pin_toggle_dt(&led);
+}
+
+
+void ledTurnOn()
+{
+	gpio_pin_set_dt(&led, 1);
+}
+void ledTurnOff()
+{
+	gpio_pin_set_dt(&led, 0);
 }

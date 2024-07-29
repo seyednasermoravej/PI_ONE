@@ -6,9 +6,9 @@ project(PI_ONE)
 
 
 target_include_directories(app PRIVATE inc)
+FILE(GLOB app_sources src/*.c src/*.cpp)
 # target_sources(app PRIVATE src/main.c)
-target_sources(app PRIVATE src/main.c src/usart.c src/queues.c src/leds.c src/pwms.c src/adcs.c src/opalib_control_pid.c src/rtuClient.c src/rtuServer.c src/hrtim.c src/gpio.c src/can.c src/stm32g4xx_hal_msp.c src/closedLoop.c src/controllers.c)
-# target_sources(app PRIVATE src/usart.c src/queues.c)
+target_sources(app PRIVATE ${app_sources})
 
 #optimizain disable begin
 add_library(set-app-flags INTERFACE)

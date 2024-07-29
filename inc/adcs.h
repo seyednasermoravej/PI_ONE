@@ -1,5 +1,12 @@
-#ifndef __ADC__H
-#define __ADC__H
+#ifndef __ADCS__H
+#define __ADCS__H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
+
 
 #define TEMP_IDX                    0
 #define TEMP2_IDX                   1
@@ -28,4 +35,11 @@ float realCurrent(uint8_t index);
 float realVoltage(uint8_t index);
 float realVoltageN(uint8_t index);
 float fanSpeed();
+
+
+#include "adc.h"
+
+#ifdef __cplusplus
+}
+#endif
 #endif

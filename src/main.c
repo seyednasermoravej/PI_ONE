@@ -21,10 +21,11 @@
 #include "controllers.h"
 #include "math.h"
 #include "closedLoop.h"
+#include "counters.h"
 
 
 
-LOG_MODULE_REGISTER(main, LOG_LEVEL_DBG);
+LOG_MODULE_REGISTER(main, LOG_LEVEL_NONE);
 
 #if !DT_NODE_EXISTS(DT_NODELABEL(busytft))
 #error "Overlay for busytft node not properly defined."
@@ -35,7 +36,7 @@ static const struct gpio_dt_spec busytft =
 
 
 void Error_Handler(){}
-
+bool checkSequence();
 PIController PI_voltage;
 
 
@@ -54,8 +55,10 @@ void initBoard()
 
 	initLeds();
 
+	// counter();
 	initBusyTft();
 
+// MX_ADC1_Init();
 	initAdcs();
 	
 	//Alk : What is the purpose of initPwms(0.5) here ?
@@ -69,7 +72,23 @@ void initBoard()
 // #endif
 }
 
+bool faultHandler(bool status)
+{
 
+	if(status)
+	{
+		pwmSet(DATA_LED_IDX, GREEN_FREQUENCY, 0.5);
+		LOG_INF("The led turns green.\n");
+	}
+	else
+	{
+		turnOffAllPWMs();
+		pwmSet(DATA_LED_IDX, RED_FREQUENCY, 0.5);
+		LOG_INF("The led turns red.\n");
+		return true;
+	}
+	return false;
+}
 void automaticMode()
 {
 	LOG_INF("Entered automatic mode.\n");
@@ -77,8 +96,6 @@ void automaticMode()
 
 void COVMode()
 {
-	uint16_t vIn, iIn, vOut, iOut, vInMax, iInMax, vOutMax, iOutMax, vInMin, iInMin, vOutMin, iOutMin;
-	// ovRegulate, ovMaxBattery, ovMinBattery, inMinBattery, inMaxBattery, maxDischargeBatteryCurrent, maxChargeBatteryCurrent;
 	LOG_INF("COVMode is selected.\n");
 #ifdef MASTER
 	//master calculations for each board
@@ -89,7 +106,15 @@ void COVMode()
 	//receiving paramters from master.
 	LOG_INF("Receiving paramters from master");
 #endif
-
+	bool status = true;
+	bool fault = false;
+	while(count && !fault)// perhaps wait for semaphor to execute
+	{
+		count = 0;
+		status = checkSequence();
+		fault = faultHandler(status);
+		// voltagePiCotroller();
+	}
 }
 
 bool getSlaveStatus(uint8_t index)
@@ -98,8 +123,6 @@ bool getSlaveStatus(uint8_t index)
 }
 void COVModeBatChMode()
 {
-	uint16_t vIn, iIn, vOut, iOut, vInMax, iInMax, vOutMax, iOutMax, vInMin, iInMin, vOutMin, iOutMin;
-	// ovRegulate, ovMaxBattery, ovMinBattery, inMinBattery, inMaxBattery, maxDischargeBatteryCurrent, maxChargeBatteryCurrent;
 	LOG_INF("COVMode with BatChMode is selected.\n");
 #ifdef MASTER
 	//master calculations for each board
@@ -110,6 +133,15 @@ void COVModeBatChMode()
 	//receiving paramters from master.
 	LOG_INF("Receiving paramters from master");
 #endif
+
+	bool status = true;
+	bool fault = false;
+	while(1 && !fault)// perhaps wait for semaphor to execute
+	{
+		status = checkSequence();
+		fault = faultHandler(status);
+		// currentPiCotroller();
+	}
 
 }
 void uniMode()
@@ -195,7 +227,7 @@ void manualMode()
 		biMode();
 	}
 }
-bool initialCheckSequence()
+bool checkSequence()
 {
 	uint16_t fan;
 #ifdef DEBUG
@@ -260,12 +292,8 @@ int main(void)
 {
 
 	initBoard();
-	//pwmSet(HRTIM_IDX, 100000, 0.3);
-	//turnOffAllPWMs();
 	bool status;
-	status = initialCheckSequence();
-	ledToggle();
-	pwmSet(HRTIM_IDX, 100000, 0.4);
+	status = checkSequence();
 	//ConfigPIController(&PI_voltage,Kp_i,Ti_i,Up_limit_i,Low_limit_i,F_samp);
 	//Ki=Kp/Ti
 	ConfigPIController(&PI_voltage,0.17,(0.0017/5),0.7,0.2,170000000);
@@ -273,18 +301,7 @@ int main(void)
 #ifdef DEBUG
 status = true;
 #endif
-
-	if(status)
-	{
-		pwmSet(DATA_LED_IDX, GREEN_FREQUENCY, 0.5);
-		LOG_INF("The led turns green.\n");
-	}
-	else
-	{
-		pwmSet(DATA_LED_IDX, RED_FREQUENCY, 0.5);
-		LOG_INF("The led turns red.\n");
-		return 1;
-	}
+	faultHandler(status);
 	int busytft = 0;
 #ifdef DEBUG
 	printf("Set the busyness of the LCD, 1 when the lcd is busy and 0 if the lcd is free.\n");
@@ -309,17 +326,21 @@ status = true;
 	//}
 	//if(userSelection == 1)
 	//{
-	//	automaticMode();
+		// automaticMode();
 	//}
 	//else
 	//{
-	//	manualMode();
+		// manualMode();
 	//}
 
-	//bool otherStatuses = true;
+	bool otherStatuses = true;
 	while(1)
 	{
-		status = initialCheckSequence();
+		// while(count)
+		// {
+
+
+		// status = checkSequence();
 #ifdef MASTER
 //receive status of the whole system.
 //check status of the whole system.
@@ -333,13 +354,18 @@ status = true;
 		//send status to the master
 		// receive others status from master
 #endif
+		// faultHandler(status && otherStatuses);
 		//if((!status) && (!otherStatuses))
 		//{
-		//	turnOffAllPWMs();
 		//	pwmSet(DATA_LED_IDX, RED_FREQUENCY, 0.5);
 		//}	
-
+		ledTurnOff();
 		closedLoop(&PI_voltage, 12000);
+
+		ledTurnOn();
+		// int32_t val = realVoltage(2);
+		count = 0;
+		// }
 	}	
 	return 0;
 }

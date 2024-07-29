@@ -23,8 +23,8 @@
 
 		led0 = &builtinled;
 		modbus = &modbus3;
-		// lcdusart = &lpuart1;
-		lcdusart = &usart2;
+		lcdusart = &lpuart1;
+		// lcdusart = &usart2;
 		die-temp0 = &die_temp;
 
 	};
@@ -33,10 +33,12 @@
 		io-channels = <&adc4 5>, <&adc3 12>, <&adc1 1>, <&adc1 2>, <&adc1 9>, <&adc1 8>, <&adc2 17>;
 	};
 	chosen {
-		zephyr,console = &lpuart1;
-		zephyr,shell-uart = &lpuart1;
-		// zephyr,console = &usart2;
-		// zephyr,shell-uart = &usart2;
+		// zephyr,console = &lpuart1;
+		// zephyr,shell-uart = &lpuart1;
+		zephyr,console = &usart2;
+		zephyr,shell-uart = &usart2;
+		// zephyr,console = &usart1;
+		// zephyr,shell-uart = &usart1;
 	};
 };
 
@@ -180,6 +182,15 @@
 };
 
 
+// &usart1 {
+// 	status = "okay";
+// 	pinctrl-0 = < &usart1_tx_pc4 &usart1_rx_pc5>;
+// 	pinctrl-names = "default";
+// 	current-speed = < 115200 >;	
+// };
+
+
+
 &usart2 {
 	status = "okay";
 	pinctrl-0 = < &usart2_tx_pa2 &usart2_rx_pa3 >;
@@ -242,3 +253,12 @@
 };
 
 
+
+&timers15 {
+	leg_one_counter: counter {
+		status = "okay";
+	};
+
+	status = "okay";
+	st,prescaler = <0>;
+};

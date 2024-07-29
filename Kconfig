@@ -7,6 +7,9 @@ config PI_ONE_STM32_HAL
   bool
   select USE_STM32_HAL_GPIO
   select USE_STM32_HAL_HRTIM
+	select USE_STM32_HAL_ADC
+	select USE_STM32_HAL_ADC_EX
+
 
 config SAMPLE_LOOPBACK_MODE
 	bool "Use CAN loopback mode"
