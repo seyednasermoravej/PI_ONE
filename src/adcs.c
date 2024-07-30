@@ -47,6 +47,7 @@ static int32_t readAdc(uint8_t index)
 		.buffer = &buf,
 		/* buffer size in bytes, not number of samples */
 		.buffer_size = sizeof(buf),
+		.calibrate = true,
 	};
 
 	int32_t val_mv;
