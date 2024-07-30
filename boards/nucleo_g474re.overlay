@@ -12,6 +12,9 @@
 		builtinled: builtinled {
 			gpios = < &gpioa 5 GPIO_ACTIVE_HIGH >;	
 		};
+		stby: stby {
+			gpios = < &gpiob 9 (GPIO_PULL_DOWN | GPIO_ACTIVE_HIGH) >;	
+		};
 	};
 
 	busytft: busytft{
@@ -85,6 +88,7 @@
 		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
 		zephyr,resolution = <12>;
 		// zephyr,vref-mv =<2048>;
+		zephyr,oversampling = <4>;
 
 	};
 
@@ -94,6 +98,7 @@
 		zephyr,reference = "ADC_REF_INTERNAL";
 		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
 		zephyr,resolution = <12>;
+		zephyr,oversampling = <4>;
 
 	};
 
@@ -103,6 +108,7 @@
 		zephyr,reference = "ADC_REF_INTERNAL";
 		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
 		zephyr,resolution = <12>;
+		zephyr,oversampling = <4>;
 
 	};
 
@@ -112,6 +118,7 @@
 		zephyr,reference = "ADC_REF_INTERNAL";
 		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
 		zephyr,resolution = <12>;
+		zephyr,oversampling = <4>;
 
 	};
 
@@ -132,6 +139,7 @@
 		zephyr,reference = "ADC_REF_INTERNAL";
 		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
 		zephyr,resolution = <12>;
+		zephyr,oversampling = <4>;
 
 	};
 
@@ -152,6 +160,7 @@
 		zephyr,reference = "ADC_REF_INTERNAL";
 		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
 		zephyr,resolution = <12>;
+		zephyr,oversampling = <4>;
 
 	};
 };
@@ -171,7 +180,7 @@
 		zephyr,reference = "ADC_REF_INTERNAL";
 		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
 		zephyr,resolution = <12>;
-		//zephyr,oversampling = <4>;
+		zephyr,oversampling = <4>;
 		
 
 	};
@@ -265,4 +274,3 @@
 	status = "okay";
 	st,prescaler = <0>;
 };
-

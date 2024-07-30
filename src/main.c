@@ -34,9 +34,12 @@ const struct device *tempSensor = DEVICE_DT_GET(DT_NODELABEL(die_temp));
 static const struct gpio_dt_spec busytft =
 	GPIO_DT_SPEC_GET_BY_IDX(DT_NODELABEL(busytft), gpios, 0);
 
-
+static const struct gpio_dt_spec stby = GPIO_DT_SPEC_GET_OR(DT_NODELABEL(stby), gpios,
+							      {0});
+								  
 void Error_Handler(){}
 bool checkSequence();
+void stbyInit();
 PIController PI_voltage;
 
 
@@ -50,11 +53,29 @@ void initBusyTft()
 	LOG_INF("The gpio is ready to use.\n");
 }
 
+void stbyInit()
+{
+    int ret;
+	if (!gpio_is_ready_dt(&stby)) {
+		printk("Error: button device %s is not ready\n",
+		       stby.port->name);
+		return 0;
+	}
+    ret = gpio_pin_configure_dt(&stby, GPIO_OUTPUT_INACTIVE);
+
+	if (ret != 0) {
+		printk("Error %d: failed to configure %s pin %d\n",
+		       ret, stby.port->name, stby.pin);
+		return 0;
+	}
+
+}
+
 void initBoard()
 {
 
 	initLeds();
-
+	stbyInit();
 	// counter();
 	initBusyTft();
 
@@ -297,7 +318,9 @@ int main(void)
 	pwmSet(HRTIM_IDX, 100000, 0.4);
 	//ConfigPIController(&PI_voltage,Kp_i,Ti_i,Up_limit_i,Low_limit_i,F_samp);
 	//Ki=Kp/Ti
+	gpio_pin_set_dt(&stby, 1);
 	ConfigPIController(&PI_voltage,0.17,(0.0017/5),0.7,0.2,170000000);
+
 
 #ifdef DEBUG
 status = true;
