@@ -63,7 +63,7 @@ void initBoard()
 	
 	//Alk : What is the purpose of initPwms(0.5) here ?
 	HAL_MspInit();
-	initPwms(0.5);
+	initPwms();
 	// initCan();
 // #ifdef MASTER
 // 	rtuClientInit();
@@ -294,6 +294,7 @@ int main(void)
 	initBoard();
 	bool status;
 	status = checkSequence();
+	pwmSet(HRTIM_IDX, 100000, 0.4);
 	//ConfigPIController(&PI_voltage,Kp_i,Ti_i,Up_limit_i,Low_limit_i,F_samp);
 	//Ki=Kp/Ti
 	ConfigPIController(&PI_voltage,0.17,(0.0017/5),0.7,0.2,170000000);
