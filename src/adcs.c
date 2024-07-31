@@ -87,80 +87,56 @@ float realTemp(uint8_t index)
 	float R0 = 10000;
 	float B = 3450;
 	int32_t raw = readAdc(index);
+	for(int i=0;i<10000;i++)
+	{
+		raw = raw + readAdc(index);
+	}
+	raw=raw/10000;
 	R = ( (raw*20000)/(3300 - raw) ); 
 	T =  B/( log(R) - log(R0) + (B/T0));
 	return (T - 273);
-	
-	//T =  ( ln(R) - ln(Ro) + B*(1/To) ) / B
-
-	// (3300)*R/(20000+R) = raw voltages are in mili volt, resistors are in ohm.
-	// 3300*R = (20000*raw)+(R*raw)
-	//(3300 - raw)*R = 20000 * raw
-	//R = (20000 * raw)/(3300 - raw)
-
-
-	//R = R0 * exp(B * (1/T) - (1/T0))
-	//T0 = 273 + 25, R0 = 10000, B = 3450
-	//logR = logR0 + B/T - B/T0 
-	//logR - logR0 + B/T0 = B/T
-	//T = B/(logR - logR0 + B/T0)
-	
+		
 }
 
 
 
 float realCurrent(uint8_t index)
 {
-	/*
-	((Ireal * 22 * 12) / ( 200 * 27)) + Vref = Vmcu
-	((Ireal * 264) / 5400)) + Vref = Vmcu
-	Ireal = (Vmcu - Vref) * 5400 / 264
-	*/
-	int32_t raw = readAdc(index);
-	float real = (raw - VREF) * 20.4545;
+	
+	int32_t raw=0 ;
+	int32_t offst=450 ;
+	
+	for(int i=0;i<10000;i++)
+	{
+		raw = raw + readAdc(index);
+	}
+	
+	raw=(raw/10000)-offst;
+	
+	float real = (raw - 1000) / 50;
+	
+
 	return real;
 }
 
 
 float realVoltage(uint8_t index)
 {
-	/*
-	((Vreal * R203 * 12) / ((R203 + R202) * 27)) + Vref = Vmcu
-	(Vreal * 5640)/(4,062,690) = Vmcu - Vref
-	Vreal = (Vmcu - Vref) * (4062690) / (5640)
-	*/
-// divider gain : 0.00312354
-//Iso gain : 7.5
-//AOP Vref + vin*0.44
- 
- //RV =  ( AV - Vref )* 97.015
+ 	int32_t raw=0 ;
+	int32_t offst=350 ;
 
-	int32_t raw = readAdc(index);
-	//float real = (raw - VREF) * 97.015;
-	float real = (raw - 2600) * 76.92;
-
-	return real;
-}
-
-float realVoltageN(uint8_t index)
-{
-	/*
-	((Vreal * R203 * 12) / ((R203 + R202) * 27)) + Vref = Vmcu
-	(Vreal * 5640)/(4,062,690) = Vmcu - Vref
-	Vreal = (Vmcu - Vref) * (4062690) / (5640)
-	*/
-// divider gain : 0.00312354
-//Iso gain : 7.5
-//AOP Vref + vin*0.44
- 
- //RV =  ( AV - Vref )* 97.015
-
-	int32_t raw = readAdc(index);
-	float real = (raw - 2) * 71.43;
-	//float real = (raw - VREF) * 97.015;
+	for(int i=0;i<10000;i++)
+	{
+		raw = raw + readAdc(index);
+	}
 	
+	raw=(raw/10000)-offst;
+	
+	float real = (raw - 1019) * 89.7606;
+
 	return real;
 }
+
 
 float fanSpeed()
 {
@@ -168,6 +144,7 @@ float fanSpeed()
 	fan = readAdc(FAN_IN_IDX);
 	LOG_INF("Fan value is: %u.", fan);
 }
+
 
 
 

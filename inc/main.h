@@ -34,14 +34,14 @@
 
 
 // shall change TB_INIT to TB_INIT_MAX?
-#define TB_INIT				100
-#define TB_INIT_MIN			0
-#define VIN_INIT			50000//50 V limit
-#define VIN_INIT_MIN		0
-#define VOUT_INIT			50000
-#define VOUT_INIT_MIN       0
-#define I_IN_INIT			2500000 // high value 
-#define I_OUT_INIT			2500000 // high value to no trigger protection 
+#define TB_INIT_MAX			60	
+#define TB_INIT_MIN		    -10
+#define VIN_INIT_MAX		110000//50 V limit
+#define VIN_INIT_MIN		10000
+#define VOUT_INIT_MAX		50000
+#define VOUT_INIT_MIN       10000
+#define I_IN_INIT_MAX		35000 // high value 
+#define I_OUT_INIT_MAX		35000 // high value to no trigger protection 
 
 //#define MAX_INPUT_CURRENT	25
 //#define MAX_OUTPUT_CURRENT 20

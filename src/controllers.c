@@ -95,7 +95,5 @@ int closedLoop(PIController* PI, float ovRef)
     float dutyCycle = RunPIController(PI, ovRef - ovMeasure);
 	//4 - DutyCycle = RunPIController(&PI_tension,Vout_ref-Vout_mes);
 	//5 - initpwm() -- Just HRTIM_CHA1
-	if (dutyCycle == 1)
-		dutyCycle = 0.9;
     pwmSet(HRTIM_IDX, 100000, dutyCycle);
 }

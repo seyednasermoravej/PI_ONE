@@ -6,8 +6,14 @@
  */
 
 /**
- * @file Sample app to demonstrate PWM.
+ * @file Sample app to demonstrate PLONE.
+ * 1-Manual Settings
+ * 1-1-CoV mode
+ * 1-2-BatCh mode
+ * 2-Auto settings
  */
+
+
 
 #include <stm32g4xx_hal.h>
 #include <zephyr/drivers/sensor.h>
@@ -81,8 +87,6 @@ void initBoard()
 
 // MX_ADC1_Init();
 	initAdcs();
-	
-	//Alk : What is the purpose of initPwms(0.5) here ?
 	HAL_MspInit();
 	initPwms();
 	// initCan();
@@ -292,7 +296,7 @@ bool checkSequence()
 	LOG_INF("I out value is: %f", iOut);
 
 
-	if((temp1 < TB_INIT) && (vIn < VIN_INIT) && ( vOut < VOUT_INIT) && (iIn < I_IN_INIT) && (iOut < I_OUT_INIT))
+	if((temp1 < TB_INIT_MAX) && (vIn < VIN_INIT_MAX) && ( vOut < VOUT_INIT_MAX) && (iIn < I_IN_INIT_MAX) && (iOut < I_OUT_INIT_MAX))
 	{
 		return true;
 	}
@@ -315,11 +319,12 @@ int main(void)
 	initBoard();
 	bool status;
 	status = checkSequence();
-	pwmSet(HRTIM_IDX, 100000, 0.4);
+	//pwmSet(HRTIM_IDX, 100000, 0.5);
 	//ConfigPIController(&PI_voltage,Kp_i,Ti_i,Up_limit_i,Low_limit_i,F_samp);
+	ConfigPIController(&PI_voltage,0.0017,(0.0017/5),0.5,0.2,10000);
 	//Ki=Kp/Ti
 	gpio_pin_set_dt(&stby, 1);
-	ConfigPIController(&PI_voltage,0.17,(0.0017/5),0.7,0.2,170000000);
+	
 
 
 #ifdef DEBUG
@@ -383,12 +388,12 @@ status = true;
 		//{
 		//	pwmSet(DATA_LED_IDX, RED_FREQUENCY, 0.5);
 		//}	
-		ledTurnOff();
+		//ledTurnOff();
 		closedLoop(&PI_voltage, 12000);
 
-		ledTurnOn();
-		// int32_t val = realVoltage(2);
-		count = 0;
+		//ledTurnOn();
+		
+		//count = 0;
 		// }
 	}	
 	return 0;
